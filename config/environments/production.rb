@@ -49,7 +49,8 @@ Rails.application.configure do
   # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  # Set FORCE_SSL=true in .env to enable (requires valid SSL certificate/domain).
+  config.force_ssl = ENV.fetch("FORCE_SSL", "false") == "true"
 
   # Log to STDOUT by default
   config.logger = ActiveSupport::Logger.new(STDOUT)
