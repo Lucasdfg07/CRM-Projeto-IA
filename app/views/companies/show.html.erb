@@ -1,0 +1,57 @@
+<% content_for :page_title, @company.name %>
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+  <div>
+    <p class="text-sm text-slate-400"><%= @company.sector.presence || "Setor não informado" %></p>
+    <% if @company.website.present? %>
+      <p class="text-sm"><%= link_to @company.website, @company.website, target: "_blank", rel: "noopener" %></p>
+    <% end %>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "Novo contato", new_company_contact_path(@company), class: "crm-btn-primary" %>
+    <%= link_to "Editar", edit_company_path(@company), class: "crm-btn-ghost" %>
+    <%= button_to "Excluir", @company, method: :delete, form: { data: { turbo_confirm: "Excluir empresa e relacionados?" } }, class: "crm-btn-ghost border-rose-400/40 text-rose-200" %>
+  </div>
+</div>
+
+<% if @company.notes.present? %>
+  <div class="crm-glass-subtle mb-6 p-4 text-sm text-slate-300"><%= simple_format @company.notes %></div>
+<% end %>
+
+<div class="grid gap-6 lg:grid-cols-2">
+  <section class="crm-glass p-6">
+    <h2 class="font-display text-lg text-cyan-100">Contatos</h2>
+    <ul class="mt-4 space-y-3">
+      <% @contacts.each do |c| %>
+        <li class="crm-glass-subtle flex items-center justify-between p-3">
+          <div>
+            <p class="font-medium text-white"><%= link_to c.full_name, company_contact_path(@company, c) %></p>
+            <p class="text-xs text-slate-500"><%= c.lifecycle_stage %> · <%= c.email %></p>
+          </div>
+          <span class="crm-badge"><%= c.title.presence || "—" %></span>
+        </li>
+      <% end %>
+      <% if @contacts.empty? %>
+        <li class="text-sm text-slate-500">Sem contatos.</li>
+      <% end %>
+    </ul>
+  </section>
+  <section class="crm-glass p-6">
+    <h2 class="font-display text-lg text-violet-100">Negócios</h2>
+    <ul class="mt-4 space-y-3">
+      <% @deals.each do |d| %>
+        <li class="crm-glass-subtle flex items-center justify-between p-3">
+          <div>
+            <p class="font-medium text-white"><%= link_to d.name, d %></p>
+            <p class="text-xs text-slate-500"><%= d.stage %> · <%= format_money_cents(d.amount_cents) %></p>
+          </div>
+          <%= link_to "Abrir", d, class: "text-xs text-cyan-200" %>
+        </li>
+      <% end %>
+      <% if @deals.empty? %>
+        <li class="text-sm text-slate-500">Sem negócios vinculados.</li>
+      <% end %>
+    </ul>
+    <%= link_to "Novo negócio (esta empresa)", new_deal_path(company_id: @company.id), class: "crm-btn-ghost mt-4 inline-block w-full text-center" %>
+  </section>
+</div>

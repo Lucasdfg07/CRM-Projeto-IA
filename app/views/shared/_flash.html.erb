@@ -1,0 +1,5 @@
+<% flash.each do |type, message| %>
+  <% next if message.blank? %>
+  <% kind = type.to_s == "notice" ? "border-cyan-400/40 bg-cyan-500/10 text-cyan-50" : "border-rose-400/40 bg-rose-500/10 text-rose-50" %>
+  <div class="crm-glass-subtle mb-4 border <%= kind %> px-4 py-3 text-sm"><%= message %></div>
+<% end %>

@@ -1,0 +1,31 @@
+<% content_for :page_title, "Negócios" %>
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+  <%= link_to "Novo negócio", new_deal_path, class: "crm-btn-primary" %>
+</div>
+
+<div class="crm-glass overflow-x-auto p-0">
+  <table class="min-w-full">
+    <thead>
+      <tr class="crm-table-head">
+        <th class="crm-table-cell">Nome</th>
+        <th class="crm-table-cell">Empresa</th>
+        <th class="crm-table-cell">Etapa</th>
+        <th class="crm-table-cell">Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @deals.each do |d| %>
+        <tr>
+          <td class="crm-table-cell font-medium text-white"><%= link_to d.name, d %></td>
+          <td class="crm-table-cell"><%= link_to d.company.name, d.company %></td>
+          <td class="crm-table-cell"><span class="crm-badge capitalize"><%= d.stage %></span></td>
+          <td class="crm-table-cell"><%= format_money_cents(d.amount_cents) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @deals.empty? %>
+    <p class="p-6 text-sm text-slate-500">Pipeline vazio.</p>
+  <% end %>
+</div>

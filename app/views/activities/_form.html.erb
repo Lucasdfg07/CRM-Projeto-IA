@@ -1,0 +1,33 @@
+<%= form_with model: @activity, class: "space-y-4" do |f| %>
+  <%= render "shared/errors", record: @activity %>
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :contact_id, class: "crm-label" %>
+      <%= f.collection_select :contact_id, Contact.includes(:company).order(:last_name), :id, lambda { |c| "#{c.full_name} · #{c.company.name}" }, {}, class: "crm-input" %>
+    </div>
+    <div>
+      <%= f.label :deal_id, class: "crm-label" %>
+      <%= f.collection_select :deal_id, Deal.order(:name), :id, :name, { include_blank: "—" }, class: "crm-input" %>
+    </div>
+    <div>
+      <%= f.label :kind, class: "crm-label" %>
+      <%= f.select :kind, Activity::KINDS.map { |k| [k.humanize, k] }, {}, class: "crm-input" %>
+    </div>
+    <div>
+      <%= f.label :occurred_at, class: "crm-label" %>
+      <%= f.datetime_field :occurred_at, class: "crm-input" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= f.label :subject, class: "crm-label" %>
+      <%= f.text_field :subject, class: "crm-input" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= f.label :body, class: "crm-label" %>
+      <%= f.text_area :body, rows: 5, class: "crm-input" %>
+    </div>
+  </div>
+  <div class="flex flex-wrap gap-3">
+    <%= f.submit class: "crm-btn-primary" %>
+    <%= link_to "Cancelar", activities_path, class: "crm-btn-ghost" %>
+  </div>
+<% end %>

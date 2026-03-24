@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+  <head>
+    <meta charset="utf-8">
+    <title>AIOX CRM</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="h-full">
+    <div class="flex min-h-full">
+      <%= render "shared/sidebar" %>
+      <div class="flex min-h-screen flex-1 flex-col">
+        <header class="sticky top-0 z-10 border-b border-white/10 bg-slate-950/70 px-6 py-4 backdrop-blur-lg">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="text-xs uppercase tracking-[0.35em] text-cyan-300/70">Synkra · AIOX</p>
+              <h1 class="crm-heading text-2xl font-semibold"><%= content_for?(:page_title) ? yield(:page_title) : "Command Center" %></h1>
+            </div>
+            <% if current_user %>
+              <div class="flex flex-wrap items-center gap-2 text-sm text-slate-300 md:gap-3">
+                <nav class="flex w-full flex-wrap gap-2 md:hidden">
+                  <%= link_to "Painel", root_path, class: "crm-btn-ghost text-xs" %>
+                  <%= link_to "Empresas", companies_path, class: "crm-btn-ghost text-xs" %>
+                  <%= link_to "Negócios", deals_path, class: "crm-btn-ghost text-xs" %>
+                </nav>
+                <span class="crm-glass-subtle truncate px-3 py-1 text-xs md:text-sm"><%= current_user.email %></span>
+                <%= button_to "Sair", session_path, method: :delete, class: "crm-btn-ghost text-xs" %>
+              </div>
+            <% end %>
+          </div>
+        </header>
+        <main class="flex-1 px-6 py-8">
+          <%= render "shared/flash" %>
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+<%= form_with model: @deal, class: "space-y-4" do |f| %>
+  <%= render "shared/errors", record: @deal %>
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="md:col-span-2">
+      <%= f.label :name, class: "crm-label" %>
+      <%= f.text_field :name, class: "crm-input" %>
+    </div>
+    <div>
+      <%= f.label :company_id, "Empresa", class: "crm-label" %>
+      <%= f.collection_select :company_id, Company.order(:name), :id, :name, {}, class: "crm-input" %>
+    </div>
+    <div>
+      <%= f.label :contact_id, "Contato (opcional)", class: "crm-label" %>
+      <%= f.collection_select :contact_id, Contact.includes(:company).order(:last_name), :id, lambda { |c| "#{c.full_name} · #{c.company.name}" }, { include_blank: "—" }, class: "crm-input" %>
+    </div>
+    <div>
+      <%= label_tag "deal_amount_reais", "Valor (R$)", class: "crm-label" %>
+      <%= text_field_tag "deal[amount_reais]", @deal.amount_reais_for_form, class: "crm-input", name: "deal[amount_reais]", placeholder: "0,00" %>
+    </div>
+    <div>
+      <%= f.label :currency, class: "crm-label" %>
+      <%= f.text_field :currency, class: "crm-input" %>
+    </div>
+    <div>
+      <%= f.label :stage, class: "crm-label" %>
+      <%= f.select :stage, Deal::STAGES.map { |s| [s.humanize, s] }, {}, class: "crm-input" %>
+    </div>
+    <div>
+      <%= f.label :probability, "Probabilidade (%)", class: "crm-label" %>
+      <%= f.number_field :probability, class: "crm-input", min: 0, max: 100 %>
+    </div>
+    <div>
+      <%= f.label :expected_close_on, class: "crm-label" %>
+      <%= f.date_field :expected_close_on, class: "crm-input" %>
+    </div>
+  </div>
+  <div class="flex flex-wrap gap-3">
+    <%= f.submit class: "crm-btn-primary" %>
+    <%= link_to "Cancelar", deals_path, class: "crm-btn-ghost" %>
+  </div>
+<% end %>

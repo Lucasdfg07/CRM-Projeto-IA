@@ -1,0 +1,33 @@
+<% content_for :page_title, @deal.name %>
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+  <div>
+    <p class="text-sm text-slate-400">
+      <%= link_to @deal.company.name, @deal.company %>
+      <% if @deal.contact %>
+        · <%= link_to @deal.contact.full_name, company_contact_path(@deal.contact.company, @deal.contact) %>
+      <% end %>
+    </p>
+    <p class="mt-1 text-lg text-cyan-100"><%= format_money_cents(@deal.amount_cents) %> · <span class="capitalize"><%= @deal.stage %></span> · <%= @deal.probability %>%</p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "Nova atividade", new_activity_path(deal_id: @deal.id), class: "crm-btn-primary" %>
+    <%= link_to "Editar", edit_deal_path(@deal), class: "crm-btn-ghost" %>
+    <%= button_to "Excluir", @deal, method: :delete, form: { data: { turbo_confirm: "Excluir negócio?" } }, class: "crm-btn-ghost border-rose-400/35" %>
+  </div>
+</div>
+
+<div class="crm-glass-subtle grid gap-4 p-6 md:grid-cols-3 text-sm text-slate-300">
+  <div>
+    <p class="crm-label">Moeda</p>
+    <p class="mt-1 text-white"><%= @deal.currency %></p>
+  </div>
+  <div>
+    <p class="crm-label">Fechamento esperado</p>
+    <p class="mt-1 text-white"><%= @deal.expected_close_on ? l(@deal.expected_close_on, format: :short) : "—" %></p>
+  </div>
+  <div>
+    <p class="crm-label">Probabilidade</p>
+    <p class="mt-1 text-white"><%= @deal.probability %>%</p>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+<% content_for :page_title, "Empresas" %>
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+  <p class="text-sm text-slate-400">Organizações monitoradas pelo cockpit.</p>
+  <%= link_to "Nova empresa", new_company_path, class: "crm-btn-primary" %>
+</div>
+
+<div class="crm-glass overflow-x-auto p-0">
+  <table class="min-w-full">
+    <thead>
+      <tr class="crm-table-head">
+        <th class="crm-table-cell">Nome</th>
+        <th class="crm-table-cell">Setor</th>
+        <th class="crm-table-cell">Site</th>
+        <th class="crm-table-cell text-right">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @companies.each do |c| %>
+        <tr>
+          <td class="crm-table-cell font-medium text-white"><%= link_to c.name, c %></td>
+          <td class="crm-table-cell"><%= c.sector.presence || "—" %></td>
+          <td class="crm-table-cell"><%= c.website.present? ? link_to(c.website, c.website, target: "_blank", rel: "noopener", class: "text-cyan-300") : "—" %></td>
+          <td class="crm-table-cell text-right">
+            <%= link_to "Abrir", c, class: "text-xs text-cyan-200" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @companies.empty? %>
+    <p class="p-6 text-sm text-slate-500">Nenhuma empresa ainda.</p>
+  <% end %>
+</div>

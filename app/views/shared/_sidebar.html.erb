@@ -1,0 +1,27 @@
+<aside class="hidden w-64 shrink-0 border-r border-white/10 bg-slate-950/80 px-4 py-6 backdrop-blur-xl md:block">
+  <div class="mb-8 px-2">
+    <p class="font-display text-lg font-semibold tracking-widest text-cyan-200">AIOX CRM</p>
+    <p class="text-xs text-slate-500">Orquestração comercial · N8N-ready</p>
+  </div>
+  <% if current_user %>
+    <nav class="space-y-1 text-sm">
+      <%= link_to "Painel", root_path, class: nav_class(root_path) %>
+      <%= link_to "Empresas", companies_path, class: nav_class(companies_path) %>
+      <%= link_to "Contatos", contacts_path, class: nav_class(contacts_path) %>
+      <%= link_to "Negócios", deals_path, class: nav_class(deals_path) %>
+      <%= link_to "Atividades", activities_path, class: nav_class(activities_path) %>
+    </nav>
+    <div class="crm-glass-subtle mt-8 space-y-2 p-3 text-xs text-slate-400">
+      <p class="font-semibold text-cyan-200/80">API N8N</p>
+      <p>Base: <code class="text-cyan-100/90">/api/v1</code></p>
+      <p>Header: <code class="text-cyan-100/90">Authorization: Bearer …</code></p>
+    </div>
+  <% else %>
+    <nav class="space-y-2 text-sm">
+      <%= link_to "Entrar", new_session_path, class: "crm-btn-primary block text-center" %>
+      <% if User.none? %>
+        <%= link_to "Primeiro acesso", new_user_path, class: "crm-btn-ghost block text-center" %>
+      <% end %>
+    </nav>
+  <% end %>
+</aside>

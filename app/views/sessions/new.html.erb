@@ -1,0 +1,25 @@
+<% content_for :page_title, "Entrar" %>
+
+<div class="mx-auto max-w-md crm-glass p-8">
+  <h1 class="crm-heading font-display text-2xl font-semibold">Acesso ao cockpit</h1>
+  <p class="mt-2 text-sm text-slate-400">Credenciais criptografadas · sessão segura</p>
+
+  <%= form_with url: session_path, class: "mt-6 space-y-4" do |f| %>
+    <div>
+      <%= label_tag :email, "E-mail", class: "crm-label" %>
+      <%= email_field_tag :email, params[:email], class: "crm-input", required: true, autocomplete: "username" %>
+    </div>
+    <div>
+      <%= label_tag :password, "Senha", class: "crm-label" %>
+      <%= password_field_tag :password, nil, class: "crm-input", required: true, autocomplete: "current-password" %>
+    </div>
+    <%= submit_tag "Entrar", class: "crm-btn-primary w-full" %>
+  <% end %>
+
+  <% if User.none? %>
+    <p class="mt-6 text-center text-sm text-slate-400">
+      Primeiro acesso?
+      <%= link_to "Criar administrador", new_user_path, class: "text-cyan-200 underline-offset-4 hover:underline" %>
+    </p>
+  <% end %>
+</div>

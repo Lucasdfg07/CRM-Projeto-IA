@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  contact: one
+  deal: one
+  user: one
+  kind: MyString
+  subject: MyString
+  body: MyText
+  occurred_at: 2026-03-24 16:06:21
+
+two:
+  contact: two
+  deal: two
+  user: two
+  kind: MyString
+  subject: MyString
+  body: MyText
+  occurred_at: 2026-03-24 16:06:21

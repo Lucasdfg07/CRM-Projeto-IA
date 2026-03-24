@@ -1,0 +1,16 @@
+<% content_for :page_title, @activity.subject %>
+
+<div class="crm-glass max-w-3xl p-8">
+  <p class="text-xs uppercase tracking-wide text-violet-300/90"><%= @activity.kind %> · <%= l @activity.occurred_at, format: :short %></p>
+  <p class="mt-3 text-sm text-slate-400">
+    <%= link_to @activity.contact.full_name, company_contact_path(@activity.contact.company, @activity.contact) %>
+    <%= " · #{link_to @activity.deal.name, @activity.deal}".html_safe if @activity.deal %>
+  </p>
+  <% if @activity.body.present? %>
+    <div class="crm-glass-subtle mt-6 p-4 text-sm leading-relaxed text-slate-200"><%= simple_format @activity.body %></div>
+  <% end %>
+  <div class="mt-6 flex flex-wrap gap-2">
+    <%= link_to "Editar", edit_activity_path(@activity), class: "crm-btn-ghost" %>
+    <%= button_to "Excluir", @activity, method: :delete, form: { data: { turbo_confirm: "Excluir?" } }, class: "crm-btn-ghost border-rose-400/35" %>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+<% content_for :page_title, "Provisionar administrador" %>
+
+<div class="mx-auto max-w-md crm-glass p-8">
+  <h1 class="crm-heading font-display text-2xl font-semibold">Bootstrap</h1>
+  <p class="mt-2 text-sm text-slate-400">Crie o primeiro usuário com papel admin (apenas se não houver contas).</p>
+
+  <%= form_with model: @user, class: "mt-6 space-y-4" do |f| %>
+    <%= render "shared/errors", record: @user %>
+    <div>
+      <%= f.label :email, class: "crm-label" %>
+      <%= f.email_field :email, class: "crm-input", required: true %>
+    </div>
+    <div>
+      <%= f.label :password, class: "crm-label" %>
+      <%= f.password_field :password, class: "crm-input", required: true %>
+    </div>
+    <div>
+      <%= f.label :password_confirmation, class: "crm-label" %>
+      <%= f.password_field :password_confirmation, class: "crm-input", required: true %>
+    </div>
+    <%= f.submit "Criar administrador", class: "crm-btn-primary w-full" %>
+  <% end %>
+</div>
