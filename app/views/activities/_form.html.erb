@@ -11,7 +11,7 @@
     </div>
     <div>
       <%= f.label :kind, class: "crm-label" %>
-      <%= f.select :kind, Activity::KINDS.map { |k| [k.humanize, k] }, {}, class: "crm-input" %>
+      <%= f.select :kind, Activity::KINDS.map { |k| [activity_kind_label(k), k] }, {}, class: "crm-input" %>
     </div>
     <div>
       <%= f.label :occurred_at, class: "crm-label" %>

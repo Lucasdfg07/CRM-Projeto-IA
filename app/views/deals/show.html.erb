@@ -8,7 +8,7 @@
         · <%= link_to @deal.contact.full_name, company_contact_path(@deal.contact.company, @deal.contact) %>
       <% end %>
     </p>
-    <p class="mt-1 text-lg text-cyan-100"><%= format_money_cents(@deal.amount_cents) %> · <span class="capitalize"><%= @deal.stage %></span> · <%= @deal.probability %>%</p>
+    <p class="mt-1 text-lg text-cyan-100"><%= format_money_cents(@deal.amount_cents) %> · <span><%= deal_stage_label(@deal.stage) %></span> · <%= @deal.probability %>%</p>
   </div>
   <div class="flex flex-wrap gap-2">
     <%= link_to "Nova atividade", new_activity_path(deal_id: @deal.id), class: "crm-btn-primary" %>

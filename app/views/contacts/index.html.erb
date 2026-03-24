@@ -21,7 +21,7 @@
             <%= link_to c.full_name, company_contact_path(c.company, c) %>
           </td>
           <td class="crm-table-cell"><%= link_to c.company.name, c.company %></td>
-          <td class="crm-table-cell"><span class="crm-badge capitalize"><%= c.lifecycle_stage %></span></td>
+          <td class="crm-table-cell"><span class="crm-badge"><%= lifecycle_label(c.lifecycle_stage) %></span></td>
           <td class="crm-table-cell"><%= c.email.presence || "—" %></td>
         </tr>
       <% end %>

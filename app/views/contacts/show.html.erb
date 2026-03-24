@@ -2,7 +2,7 @@
 
 <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
   <div>
-    <p class="text-sm text-slate-400"><%= link_to @company.name, @company %> · <span class="capitalize"><%= @contact.lifecycle_stage %></span></p>
+    <p class="text-sm text-slate-400"><%= link_to @company.name, @company %> · <span><%= lifecycle_label(@contact.lifecycle_stage) %></span></p>
     <p class="text-sm text-slate-300"><%= @contact.email %> · <%= @contact.phone %></p>
   </div>
   <div class="flex flex-wrap gap-2">
@@ -18,7 +18,7 @@
   <ul class="mt-4 space-y-3">
     <% recent.each do |a| %>
       <li class="crm-glass-subtle p-3">
-        <p class="text-xs uppercase tracking-wide text-violet-300/80"><%= a.kind %> · <%= l a.occurred_at, format: :short %></p>
+        <p class="text-xs uppercase tracking-wide text-violet-300/80"><%= activity_kind_label(a.kind) %> · <%= l a.occurred_at, format: :short %></p>
         <p class="font-medium text-white"><%= link_to a.subject, a %></p>
       </li>
     <% end %>

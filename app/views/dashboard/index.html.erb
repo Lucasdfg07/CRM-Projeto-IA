@@ -1,63 +1,348 @@
-<% content_for :page_title, "Painel operacional" %>
+<% content_for :page_title, "Painel Operacional" %>
 
-<div class="grid gap-6 lg:grid-cols-12">
-  <section class="crm-glass p-6 lg:col-span-8">
-    <h2 class="mb-4 font-display text-lg text-cyan-100">Resumo orbital</h2>
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <% [
-        ["Empresas", @counts[:companies], "Cadastros ativos"],
-        ["Contatos", @counts[:contacts], "Relacionamentos"],
-        ["Pipeline", @counts[:deals_open], "Negócios em aberto"],
-        ["Atividade (7d)", @counts[:activities_week], "Interações registradas"]
-      ].each do |title, value, hint| %>
-        <div class="crm-glass-subtle p-4">
-          <p class="crm-label"><%= title %></p>
-          <p class="mt-2 font-display text-3xl text-white"><%= value %></p>
-          <p class="mt-1 text-xs text-slate-500"><%= hint %></p>
-        </div>
-      <% end %>
-    </div>
-    <div class="mt-8 grid gap-4 md:grid-cols-2">
-      <div class="crm-glass-subtle p-4">
-        <h3 class="text-sm font-semibold text-violet-200">Funil por etapa</h3>
-        <ul class="mt-3 space-y-2 text-sm text-slate-300">
-          <% @pipeline.each do |stage, count| %>
-            <li class="flex justify-between border-b border-white/5 pb-2">
-              <span class="capitalize"><%= stage %></span>
-              <span class="crm-badge"><%= count %></span>
-            </li>
-          <% end %>
-          <% if @pipeline.empty? %>
-            <li class="text-slate-500">Nenhum negócio em pipeline — crie o primeiro.</li>
-          <% end %>
-        </ul>
+<div class="space-y-6">
+
+  <%# ── KPI Cards ─────────────────────────────────────────────── %>
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <% [
+      { title: "Empresas",          value: @counts[:companies],       hint: "Cadastros ativos",        color: "text-cyan-300",    glow: "shadow-cyan-500/20" },
+      { title: "Contatos",          value: @counts[:contacts],        hint: "Relacionamentos",          color: "text-violet-300",  glow: "shadow-violet-500/20" },
+      { title: "Pipeline ativo",    value: @counts[:deals_open],      hint: "Negócios em aberto",       color: "text-pink-300",    glow: "shadow-pink-500/20" },
+      { title: "Atividades (7d)",   value: @counts[:activities_week], hint: "Interações recentes",      color: "text-emerald-300", glow: "shadow-emerald-500/20" }
+    ].each do |card| %>
+      <div class="crm-glass p-6 shadow-xl <%= card[:glow] %>">
+        <p class="crm-label"><%= card[:title] %></p>
+        <p class="mt-3 font-display text-5xl font-semibold tracking-tight <%= card[:color] %>"><%= card[:value] %></p>
+        <p class="mt-2 text-xs text-slate-500"><%= card[:hint] %></p>
       </div>
-      <div class="crm-glass-subtle p-4">
-        <h3 class="text-sm font-semibold text-cyan-200">Automação N8N</h3>
-        <p class="mt-2 text-sm leading-relaxed text-slate-400">
-          Eventos de empresas, contatos, negócios e atividades disparam <code class="text-cyan-200/90">POST</code>
-          para <code class="text-cyan-200/90">N8N_WEBHOOK_URL</code> com assinatura opcional.
-        </p>
-        <p class="mt-4 text-xs text-slate-500">
-          Consuma <code class="text-cyan-200/80">GET /api/v1/…</code> com header <code class="text-cyan-200/80">Authorization: Bearer</code> configurado em <code class="text-cyan-200/80">CRM_API_TOKEN</code>.
-        </p>
+    <% end %>
+  </div>
+
+  <%# ── Gráfico de Tendência — 30 dias ────────────────────────── %>
+  <div class="crm-glass p-6">
+    <div class="mb-4 flex flex-wrap items-start justify-between gap-2">
+      <div>
+        <h2 class="font-display text-base font-semibold text-cyan-100">Registros nos últimos 30 dias</h2>
+        <p class="mt-0.5 text-xs text-slate-500">Evolução diária de contatos, negócios e atividades</p>
+      </div>
+      <div class="flex gap-4 text-xs text-slate-400">
+        <span class="flex items-center gap-1.5"><span class="inline-block h-2 w-5 rounded-full bg-cyan-400"></span> Contatos</span>
+        <span class="flex items-center gap-1.5"><span class="inline-block h-2 w-5 rounded-full bg-violet-400"></span> Negócios</span>
+        <span class="flex items-center gap-1.5"><span class="inline-block h-2 w-5 rounded-full bg-pink-400"></span> Atividades</span>
       </div>
     </div>
-  </section>
-  <section class="crm-glass p-6 lg:col-span-4">
-    <h2 class="mb-4 font-display text-lg text-cyan-100">Linha do tempo</h2>
-    <ul class="space-y-4">
-      <% @recent_activities.each do |a| %>
-        <li class="crm-glass-subtle p-3">
-          <p class="text-xs uppercase tracking-wide text-violet-300/80"><%= a.kind %> · <%= l a.occurred_at, format: :short %></p>
-          <p class="mt-1 font-medium text-slate-100"><%= a.subject %></p>
-          <p class="text-xs text-slate-500"><%= a.contact&.full_name %> <%= "· #{a.deal.name}" if a.deal %></p>
-        </li>
-      <% end %>
-      <% if @recent_activities.empty? %>
-        <li class="text-sm text-slate-500">Sem atividades recentes.</li>
-      <% end %>
-    </ul>
-    <%= link_to "Nova atividade", new_activity_path, class: "crm-btn-primary mt-6 w-full" %>
-  </section>
+    <div style="height:260px;">
+      <canvas id="chart-trend"></canvas>
+    </div>
+  </div>
+
+  <%# ── Linha 2: Funil + Atividades por tipo ──────────────────── %>
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="crm-glass p-6">
+      <h2 class="font-display text-base font-semibold text-violet-200">Negócios por etapa</h2>
+      <p class="mb-4 mt-0.5 text-xs text-slate-500">Distribuição do funil de vendas</p>
+      <div style="height:220px;" class="flex items-center justify-center">
+        <canvas id="chart-pipeline"></canvas>
+      </div>
+    </div>
+    <div class="crm-glass p-6">
+      <h2 class="font-display text-base font-semibold text-pink-200">Atividades por tipo</h2>
+      <p class="mb-4 mt-0.5 text-xs text-slate-500">Canais de comunicação utilizados</p>
+      <div style="height:220px;">
+        <canvas id="chart-activities-kind"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Linha 3: Valor do pipeline + Lifecycle de contatos ────── %>
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="crm-glass p-6">
+      <h2 class="font-display text-base font-semibold text-emerald-200">Valor do pipeline ativo (R$)</h2>
+      <p class="mb-4 mt-0.5 text-xs text-slate-500">Volume financeiro por etapa</p>
+      <div style="height:220px;">
+        <canvas id="chart-pipeline-value"></canvas>
+      </div>
+    </div>
+    <div class="crm-glass p-6">
+      <h2 class="font-display text-base font-semibold text-cyan-200">Contatos por estágio</h2>
+      <p class="mb-4 mt-0.5 text-xs text-slate-500">Jornada do cliente no funil</p>
+      <div style="height:220px;" class="flex items-center justify-center">
+        <canvas id="chart-contacts-lifecycle"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Linha 4: Funil textual + Linha do tempo ───────────────── %>
+  <div class="grid gap-6 lg:grid-cols-12">
+    <section class="crm-glass p-6 lg:col-span-4">
+      <h2 class="mb-4 font-display text-base font-semibold text-violet-100">Funil por etapa</h2>
+      <ul class="space-y-3 text-sm">
+        <% @pipeline.each do |stage, count| %>
+          <li class="flex items-center justify-between rounded-lg border border-white/5 bg-slate-950/30 px-3 py-2">
+            <span class="text-slate-300"><%= deal_stage_label(stage) %></span>
+            <span class="crm-badge"><%= count %></span>
+          </li>
+        <% end %>
+        <% if @pipeline.empty? %>
+          <li class="text-slate-500">Nenhum negócio ativo no pipeline.</li>
+        <% end %>
+      </ul>
+    </section>
+
+    <section class="crm-glass p-6 lg:col-span-8">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="font-display text-base font-semibold text-cyan-100">Linha do tempo</h2>
+        <%= link_to "Nova atividade", new_activity_path, class: "crm-btn-primary text-xs" %>
+      </div>
+      <ul class="space-y-3">
+        <% @recent_activities.each do |a| %>
+          <li class="crm-glass-subtle p-3">
+            <p class="text-xs uppercase tracking-wide text-violet-300/80">
+              <%= activity_kind_label(a.kind) %> · <%= l a.occurred_at, format: :short %>
+            </p>
+            <p class="mt-1 font-medium text-slate-100"><%= a.subject %></p>
+            <p class="text-xs text-slate-500">
+              <%= a.contact&.full_name %><%= " · #{a.deal.name}" if a.deal %>
+            </p>
+          </li>
+        <% end %>
+        <% if @recent_activities.empty? %>
+          <li class="text-sm text-slate-500">Sem atividades recentes.</li>
+        <% end %>
+      </ul>
+    </section>
+  </div>
+
 </div>
+
+<script>
+(() => {
+  const CYAN   = '#22d3ee';
+  const VIOLET = '#8b5cf6';
+  const PINK   = '#f472b6';
+  const GREEN  = '#4ade80';
+  const ORANGE = '#fb923c';
+  const RED    = '#f87171';
+  const AMBER  = '#fbbf24';
+
+  Chart.defaults.color          = '#94a3b8';
+  Chart.defaults.borderColor    = 'rgba(255,255,255,0.06)';
+  Chart.defaults.font.family    = "'Space Grotesk', sans-serif";
+  Chart.defaults.font.size      = 12;
+  Chart.defaults.plugins.legend.labels.usePointStyle    = true;
+  Chart.defaults.plugins.legend.labels.pointStyleWidth  = 8;
+  Chart.defaults.plugins.legend.labels.padding          = 16;
+
+  const tooltip = {
+    backgroundColor : 'rgba(2,6,23,0.95)',
+    borderColor     : 'rgba(34,211,238,0.2)',
+    borderWidth     : 1,
+    padding         : 10,
+    cornerRadius    : 8,
+    titleColor      : '#e2e8f0',
+    bodyColor       : '#94a3b8'
+  };
+
+  // ── 1. Tendência 30 dias ─────────────────────────────────────
+  (() => {
+    const ctx = document.getElementById('chart-trend');
+    if (!ctx) return;
+
+    const labels = <%= raw @chart_labels.to_json %>;
+
+    const grad = (color) => (context) => {
+      const c = context.chart.ctx;
+      const g = c.createLinearGradient(0, 0, 0, context.chart.height);
+      g.addColorStop(0, color + '55');
+      g.addColorStop(1, color + '00');
+      return g;
+    };
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Contatos',
+            data: <%= raw @contacts_by_day.to_json %>,
+            borderColor: CYAN, borderWidth: 2,
+            backgroundColor: grad(CYAN),
+            pointRadius: 2, pointHoverRadius: 6,
+            pointBackgroundColor: CYAN,
+            fill: true, tension: 0.4
+          },
+          {
+            label: 'Negócios',
+            data: <%= raw @deals_by_day.to_json %>,
+            borderColor: VIOLET, borderWidth: 2,
+            backgroundColor: grad(VIOLET),
+            pointRadius: 2, pointHoverRadius: 6,
+            pointBackgroundColor: VIOLET,
+            fill: true, tension: 0.4
+          },
+          {
+            label: 'Atividades',
+            data: <%= raw @activities_by_day.to_json %>,
+            borderColor: PINK, borderWidth: 2,
+            backgroundColor: grad(PINK),
+            pointRadius: 2, pointHoverRadius: 6,
+            pointBackgroundColor: PINK,
+            fill: true, tension: 0.4
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: false }, tooltip },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { maxTicksLimit: 10, color: '#475569' }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { color: '#475569', precision: 0 },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  })();
+
+  // ── 2. Pipeline doughnut ─────────────────────────────────────
+  (() => {
+    const ctx = document.getElementById('chart-pipeline');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Qualificação', 'Proposta', 'Negociação', 'Ganho', 'Perdido'],
+        datasets: [{
+          data: <%= raw @deals_stage_counts.to_json %>,
+          backgroundColor: [CYAN + 'bb', VIOLET + 'bb', PINK + 'bb', GREEN + 'bb', RED + 'bb'],
+          borderColor: '#050816',
+          borderWidth: 3,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '68%',
+        plugins: {
+          legend: { position: 'right', labels: { color: '#94a3b8', padding: 12 } },
+          tooltip
+        }
+      }
+    });
+  })();
+
+  // ── 3. Atividades por tipo ───────────────────────────────────
+  (() => {
+    const ctx = document.getElementById('chart-activities-kind');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Ligação', 'E-mail', 'Reunião', 'Nota', 'Tarefa'],
+        datasets: [{
+          data: <%= raw @activities_by_kind.to_json %>,
+          backgroundColor: [CYAN+'88', VIOLET+'88', PINK+'88', GREEN+'88', ORANGE+'88'],
+          borderColor:      [CYAN, VIOLET, PINK, GREEN, ORANGE],
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: { legend: { display: false }, tooltip },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { color: '#475569', precision: 0 },
+            beginAtZero: true
+          },
+          y: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+        }
+      }
+    });
+  })();
+
+  // ── 4. Valor do pipeline ─────────────────────────────────────
+  (() => {
+    const ctx = document.getElementById('chart-pipeline-value');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Qualificação', 'Proposta', 'Negociação'],
+        datasets: [{
+          label: 'Valor (R$)',
+          data: <%= raw @pipeline_value_by_stage.to_json %>,
+          backgroundColor: [CYAN+'77', VIOLET+'77', PINK+'77'],
+          borderColor:      [CYAN, VIOLET, PINK],
+          borderWidth: 1,
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            ...tooltip,
+            callbacks: {
+              label: (ctx) => ` R$ ${ctx.parsed.y.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: {
+              color: '#475569',
+              callback: (v) => `R$ ${v.toLocaleString('pt-BR')}`
+            },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  })();
+
+  // ── 5. Contatos por lifecycle ────────────────────────────────
+  (() => {
+    const ctx = document.getElementById('chart-contacts-lifecycle');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Lead', 'Prospecto', 'Cliente', 'Inativo'],
+        datasets: [{
+          data: <%= raw @contacts_by_lifecycle.to_json %>,
+          backgroundColor: [CYAN+'bb', VIOLET+'bb', GREEN+'bb', RED+'bb'],
+          borderColor: '#050816',
+          borderWidth: 3,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        cutout: '68%',
+        plugins: {
+          legend: { position: 'right', labels: { color: '#94a3b8', padding: 12 } },
+          tooltip
+        }
+      }
+    });
+  })();
+
+})();
+</script>

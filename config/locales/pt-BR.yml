@@ -5,3 +5,110 @@ pt-BR:
   date:
     formats:
       short: "%d/%m/%Y"
+
+  helpers:
+    submit:
+      create: "Salvar"
+      update: "Atualizar"
+      company:
+        create: "Salvar empresa"
+        update: "Atualizar empresa"
+      contact:
+        create: "Salvar contato"
+        update: "Atualizar contato"
+      deal:
+        create: "Salvar negócio"
+        update: "Atualizar negócio"
+      activity:
+        create: "Registrar atividade"
+        update: "Atualizar atividade"
+
+  activerecord:
+    models:
+      company:
+        one: Empresa
+        other: Empresas
+      contact:
+        one: Contato
+        other: Contatos
+      deal:
+        one: Negócio
+        other: Negócios
+      activity:
+        one: Atividade
+        other: Atividades
+      user:
+        one: Usuário
+        other: Usuários
+
+    attributes:
+      company:
+        name: Nome
+        sector: Setor
+        website: Site
+        notes: Observações
+      contact:
+        first_name: Nome
+        last_name: Sobrenome
+        email: E-mail
+        phone: Telefone
+        title: Cargo
+        lifecycle_stage: Estágio
+        company_id: Empresa
+      deal:
+        name: Nome
+        company_id: Empresa
+        contact_id: Contato
+        amount_cents: Valor
+        amount_reais: "Valor (R$)"
+        currency: Moeda
+        stage: Etapa
+        probability: "Probabilidade (%)"
+        expected_close_on: Previsão de fechamento
+      activity:
+        contact_id: Contato
+        deal_id: Negócio
+        kind: Tipo
+        subject: Assunto
+        body: Descrição
+        occurred_at: "Data/hora"
+        user_id: Responsável
+      user:
+        email: E-mail
+        password: Senha
+        password_confirmation: Confirmação de senha
+        role: Perfil
+
+    errors:
+      messages:
+        blank: não pode ficar em branco
+        taken: já está em uso
+        invalid: é inválido
+        too_long: "é muito longo (máximo: %{count} caracteres)"
+        inclusion: não é uma opção válida
+        confirmation: não é igual à confirmação
+
+  crm:
+    lifecycle_stages:
+      lead: Lead
+      prospect: Prospecto
+      customer: Cliente
+      churned: Inativo
+
+    deal_stages:
+      qualification: Qualificação
+      proposal: Proposta
+      negotiation: Negociação
+      won: Ganho
+      lost: Perdido
+
+    activity_kinds:
+      call: Ligação
+      email: E-mail
+      meeting: Reunião
+      note: Nota
+      task: Tarefa
+
+    user_roles:
+      admin: Administrador
+      member: Membro

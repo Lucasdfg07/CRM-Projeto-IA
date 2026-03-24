@@ -15,4 +15,16 @@ module ApplicationHelper
 
     number_to_currency(cents / 100.0, unit: "R$ ", separator: ",", delimiter: ".")
   end
+
+  def lifecycle_label(stage)
+    I18n.t("crm.lifecycle_stages.#{stage}", default: stage.to_s.humanize)
+  end
+
+  def deal_stage_label(stage)
+    I18n.t("crm.deal_stages.#{stage}", default: stage.to_s.humanize)
+  end
+
+  def activity_kind_label(kind)
+    I18n.t("crm.activity_kinds.#{kind}", default: kind.to_s.humanize)
+  end
 end

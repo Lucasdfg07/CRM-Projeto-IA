@@ -23,7 +23,7 @@
     </div>
     <div>
       <%= f.label :lifecycle_stage, class: "crm-label" %>
-      <%= f.select :lifecycle_stage, Contact::LIFECYCLES.map { |s| [s.humanize, s] }, {}, class: "crm-input" %>
+      <%= f.select :lifecycle_stage, Contact::LIFECYCLES.map { |s| [lifecycle_label(s), s] }, {}, class: "crm-input" %>
     </div>
   </div>
   <div class="flex flex-wrap gap-3">

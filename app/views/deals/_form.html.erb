@@ -23,7 +23,7 @@
     </div>
     <div>
       <%= f.label :stage, class: "crm-label" %>
-      <%= f.select :stage, Deal::STAGES.map { |s| [s.humanize, s] }, {}, class: "crm-input" %>
+      <%= f.select :stage, Deal::STAGES.map { |s| [deal_stage_label(s), s] }, {}, class: "crm-input" %>
     </div>
     <div>
       <%= f.label :probability, "Probabilidade (%)", class: "crm-label" %>
