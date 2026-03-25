@@ -19,6 +19,16 @@ export default class extends Controller {
     this.attachBlockControls()
   }
 
+  onDragOver(event) {
+    // Necessário para evitar comportamento padrão do navegador ao arrastar.
+    event.preventDefault()
+  }
+
+  onDrop(event) {
+    // Interface atualmente não usa drop (placeholder para futura extensão).
+    event.preventDefault()
+  }
+
   addBlock(event) {
     const type = event.currentTarget.dataset.blockType
     const block = this.createBlock(type)
