@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["step", "progress", "progressText", "okButton", "submitButton"]
+  static targets = ["step", "progress", "progressText", "submitButton"]
 
   connect() {
     this.index = 0
@@ -73,10 +73,16 @@ export default class extends Controller {
     if (this.hasProgressTextTarget) this.progressTextTarget.textContent = `${idx + 1}/${this.total}`
 
     const isLast = idx === this.total - 1
-    if (this.hasOkButtonTarget) this.okButtonTarget.classList.toggle("hidden", isLast)
     if (this.hasSubmitButtonTarget) this.submitButtonTarget.classList.toggle("hidden", !isLast)
 
     const active = this.currentStep()
+    // Esconde/mostra o botão OK apenas no step ativo
+    this.stepTargets.forEach((step, i) => {
+      const ok = step.querySelector('[data-public-form-flow-target="okButton"]')
+      if (!ok) return
+      ok.classList.toggle("hidden", i !== idx || isLast)
+    })
+
     const input = active?.querySelector("input, textarea, select")
     if (input) {
       setTimeout(() => input.focus(), 30)

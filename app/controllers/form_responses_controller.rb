@@ -13,6 +13,10 @@ class FormResponsesController < ApplicationController
     @fields = @form.form_fields
   end
 
+  def thanks
+    redirect_to root_path, alert: "Formulário desabilitado." and return unless @form.enabled?
+  end
+
   def create
     redirect_to root_path, alert: "Formulário desabilitado." and return unless @form.enabled?
 
@@ -51,7 +55,7 @@ class FormResponsesController < ApplicationController
       response.form_answers.create!(form_field_id: field_id, value: value)
     end
 
-    redirect_to form_public_path(@form.slug), notice: "Resposta enviada com sucesso."
+    redirect_to public_form_thanks_path(@form.slug)
   rescue ActiveRecord::RecordInvalid => e
     @fields = @form.form_fields
     flash.now[:alert] = e.record.errors.full_messages.first || "Não foi possível enviar."
