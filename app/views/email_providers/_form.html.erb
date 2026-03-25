@@ -16,6 +16,18 @@
     </div>
   </div>
 
+  <div data-provider-form-target="gmailHint" class="hidden rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95">
+    <p class="font-medium text-amber-200">Gmail (Google)</p>
+    <p class="mt-1 text-amber-100/90">
+      O Google <strong>não aceita</strong> a senha que você usa para entrar no Gmail no SMTP. É preciso criar uma
+      <strong>senha de app</strong> (16 letras), com a <strong>verificação em duas etapas</strong> ativada na conta.
+      Usuário = seu e-mail completo; senha = a senha de app, não a senha da conta.
+    </p>
+    <p class="mt-2 text-xs text-amber-200/80">
+      <a href="https://support.google.com/accounts/answer/185833" class="underline hover:text-white" target="_blank" rel="noopener">Como criar senha de app (Google)</a>
+    </p>
+  </div>
+
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
     <div class="md:col-span-2">
       <%= f.label :host, "Servidor SMTP", class: "block text-sm font-medium text-slate-300 mb-1" %>

@@ -3,8 +3,18 @@ import { Controller } from "@hotwired/stimulus"
 // Preenche automaticamente host/porta/SSL/STARTTLS com base no tipo do provedor.
 // Mantém as regras "SMTP Customizado" como manual.
 export default class extends Controller {
+  static targets = ["gmailHint"]
+
   connect() {
     this.fillDefaults()
+    this.toggleGmailHint()
+  }
+
+  toggleGmailHint() {
+    if (!this.hasGmailHintTarget) return
+    const sel = this.element.querySelector('select[name="email_provider[provider_type]"]')
+    const isGmail = sel && sel.value === "gmail"
+    this.gmailHintTarget.classList.toggle("hidden", !isGmail)
   }
 
   fillDefaults() {
@@ -34,6 +44,8 @@ export default class extends Controller {
     if (portInput && !portInput.value) portInput.value = cfg.port
     if (starttlsCheckbox) starttlsCheckbox.checked = cfg.starttls
     if (sslCheckbox) sslCheckbox.checked = cfg.ssl
+
+    this.toggleGmailHint()
   }
 }
 
