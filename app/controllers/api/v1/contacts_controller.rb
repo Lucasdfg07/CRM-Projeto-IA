@@ -8,7 +8,7 @@ module Api
       def index
         scope = Contact.includes(:company).order(created_at: :desc)
         scope = scope.where(company_id: params[:company_id]) if params[:company_id].present?
-        render json: scope.map { |c| contact_json(c) }
+        render json: paginate(scope).map { |c| contact_json(c) }
       end
 
       def show

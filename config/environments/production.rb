@@ -88,11 +88,16 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # Proteção contra DNS rebinding e Host Header Injection.
+  # Configure APP_HOST no .env de produção (ex: APP_HOST=meucrm.com)
+  if ENV["APP_HOST"].present?
+    config.hosts = [
+      ENV["APP_HOST"],
+      /\A.*\.#{Regexp.escape(ENV["APP_HOST"])}\z/
+    ]
+    config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  end
+
+  # Exige master key em produção (descomente após garantir RAILS_MASTER_KEY no ambiente)
+  # config.require_master_key = true
 end

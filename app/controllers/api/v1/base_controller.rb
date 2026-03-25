@@ -27,6 +27,29 @@ module Api
       def not_found
         render json: { error: "Não encontrado" }, status: :not_found
       end
+
+      # -----------------------------------------------------------------------
+      # Paginação segura — previne dump completo de dados e DoS
+      # Uso: paginate(scope) → retorna scope paginado + meta no header
+      # Parâmetros aceitos: ?page=1&per_page=25 (max 100)
+      # -----------------------------------------------------------------------
+      def paginate(scope)
+        per_page = [[params[:per_page].to_i, 1].max, 100].min
+        per_page = 25 if per_page.zero?
+        page     = [params[:page].to_i, 1].max
+
+        total   = scope.count
+        records = scope.limit(per_page).offset((page - 1) * per_page)
+
+        response.set_header("X-Total-Count",   total.to_s)
+        response.set_header("X-Page",          page.to_s)
+        response.set_header("X-Per-Page",      per_page.to_s)
+        response.set_header("X-Total-Pages",   ((total.to_f / per_page).ceil).to_s)
+        response.set_header("Access-Control-Expose-Headers",
+                            "X-Total-Count, X-Page, X-Per-Page, X-Total-Pages")
+
+        records
+      end
     end
   end
 end

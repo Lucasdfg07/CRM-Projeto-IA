@@ -8,7 +8,7 @@ module Api
       def index
         scope = Deal.includes(:company, :contact).order(updated_at: :desc)
         scope = scope.where(company_id: params[:company_id]) if params[:company_id].present?
-        render json: scope.map { |d| deal_json(d) }
+        render json: paginate(scope).map { |d| deal_json(d) }
       end
 
       def show

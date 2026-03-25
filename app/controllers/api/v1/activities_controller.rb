@@ -9,7 +9,7 @@ module Api
         scope = Activity.includes(:contact, :deal, :user).order(occurred_at: :desc)
         scope = scope.where(contact_id: params[:contact_id]) if params[:contact_id].present?
         scope = scope.where(deal_id: params[:deal_id]) if params[:deal_id].present?
-        render json: scope.map { |a| activity_json(a) }
+        render json: paginate(scope).map { |a| activity_json(a) }
       end
 
       def show

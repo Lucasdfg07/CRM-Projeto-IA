@@ -6,7 +6,7 @@ module Api
       before_action :set_company, only: %i[show update destroy]
 
       def index
-        companies = Company.order(created_at: :desc)
+        companies = paginate(Company.order(created_at: :desc))
         render json: companies.as_json(only: %i[id name sector website notes created_at updated_at])
       end
 
