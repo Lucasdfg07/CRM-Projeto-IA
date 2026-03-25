@@ -6,6 +6,7 @@ class FormResponsesController < ApplicationController
   protect_from_forgery with: :exception
 
   before_action :set_form
+  layout "public_form"
 
   def new
     redirect_to root_path, alert: "Formulário desabilitado." and return unless @form.enabled?
