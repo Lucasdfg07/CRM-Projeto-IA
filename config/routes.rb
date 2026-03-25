@@ -41,6 +41,11 @@ Rails.application.routes.draw do
     end
   end
 
+  # Forms (Typeform-like)
+  resources :forms
+  get  "/f/:slug", to: "form_responses#new", as: :public_form
+  post "/f/:slug", to: "form_responses#create"
+
   namespace :api do
     namespace :v1 do
       resources :companies
