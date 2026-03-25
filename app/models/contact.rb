@@ -8,6 +8,12 @@ class Contact < ApplicationRecord
 
   belongs_to :company
   has_many :deals, dependent: :nullify
+
+  scope :with_email, -> { where.not(email: [nil, ""]) }
+  scope :with_phone, lambda {
+    where.not(phone: [nil, ""]).or(where.not(phone_normalized: nil))
+  }
+  scope :with_email_and_phone, -> { with_email.merge(with_phone) }
   has_many :activities, dependent: :destroy
   has_and_belongs_to_many :segments,
     join_table: :contact_segments,

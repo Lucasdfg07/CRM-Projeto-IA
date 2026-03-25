@@ -12,7 +12,7 @@ class CampaignsController < ApplicationController
   end
 
   def new
-    @campaign  = Campaign.new(status: "draft")
+    @campaign  = Campaign.new(status: "draft", recipient_filter: "email")
     @providers = EmailProvider.where(enabled: true).order(:name)
     @segments  = Segment.order(:name)
   end
@@ -67,6 +67,11 @@ class CampaignsController < ApplicationController
       return
     end
 
+    if @campaign.contacts_for_dispatch.none?
+      redirect_to @campaign, alert: "Nenhum destinatário com e-mail no segmento com o filtro atual (e-mail / telefone)."
+      return
+    end
+
     @campaign.update!(status: "sending", sent_at: Time.current)
     Campaigns::DispatchJob.perform_later(@campaign.id)
     redirect_to @campaign, notice: "Campanha iniciada! Os emails estão sendo enviados."
@@ -99,7 +104,7 @@ class CampaignsController < ApplicationController
     params.require(:campaign).permit(
       :name, :subject, :preview_text, :html_body,
       :email_provider_id, :from_name, :from_email, :reply_to,
-      :scheduled_at, :status
+      :scheduled_at, :status, :recipient_filter
     )
   end
 end

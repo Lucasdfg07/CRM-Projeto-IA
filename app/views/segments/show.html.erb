@@ -12,23 +12,42 @@
   </div>
 
   <!-- Adicionar contatos -->
-  <% if @available_contacts.any? %>
-    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 mb-6">
-      <h2 class="font-semibold text-white mb-3">Adicionar contatos ao segmento</h2>
+  <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+      <h2 class="font-semibold text-white">Adicionar contatos ao segmento</h2>
+      <div class="flex flex-wrap gap-2 text-xs">
+        <% %w[all email phone both].each do |fkey| %>
+          <% path = fkey == "all" ? segment_path(@segment) : segment_path(@segment, filter: fkey) %>
+          <% active = (params[:filter].blank? && fkey == "all") || (params[:filter].to_s == fkey) %>
+          <%= link_to path,
+                class: "px-3 py-1.5 rounded-lg transition #{active ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}" do %>
+            <%= t("crm.segment_contact_filters.#{fkey}") %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+    <p class="text-xs text-slate-500 mb-3">Filtre a lista de contatos disponíveis para adicionar ao segmento (por e-mail, telefone ou ambos).</p>
+    <% if @available_contacts.any? %>
       <%= form_with url: add_contacts_segment_path(@segment), method: :post, class: "space-y-3" do |f| %>
+        <% if params[:filter].present? %>
+          <%= hidden_field_tag :filter, params[:filter] %>
+        <% end %>
         <div class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
           <% @available_contacts.each do |contact| %>
             <label class="flex items-center gap-2 cursor-pointer hover:bg-slate-700 rounded-lg px-2 py-1.5 transition">
               <input type="checkbox" name="contact_ids[]" value="<%= contact.id %>" class="accent-indigo-500 w-4 h-4 rounded">
               <span class="text-sm text-slate-300"><%= contact.full_name %></span>
-              <span class="text-xs text-slate-500 ml-auto"><%= contact.email %></span>
+              <span class="text-xs text-slate-500 truncate max-w-[140px]"><%= contact.email.presence || "—" %></span>
+              <span class="text-xs text-slate-500 truncate max-w-[120px] ml-auto"><%= contact.phone.presence || "—" %></span>
             </label>
           <% end %>
         </div>
         <%= f.submit "Adicionar selecionados", class: "bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-lg cursor-pointer transition" %>
       <% end %>
-    </div>
-  <% end %>
+    <% else %>
+      <p class="text-sm text-slate-500">Nenhum contato disponível com este filtro (ou todos já estão no segmento).</p>
+    <% end %>
+  </div>
 
   <!-- Contatos do segmento -->
   <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
@@ -42,14 +61,17 @@
     <% else %>
       <div class="divide-y divide-slate-700">
         <% @contacts.each do |contact| %>
-          <div class="px-5 py-3 flex items-center justify-between gap-3">
-            <div>
+          <div class="px-5 py-3 flex items-center justify-between gap-3 flex-wrap">
+            <div class="min-w-0">
               <span class="text-sm font-medium text-white"><%= contact.full_name %></span>
-              <span class="text-xs text-slate-500 ml-2"><%= contact.email %></span>
+              <span class="text-xs text-slate-500 ml-2"><%= contact.email.presence || "—" %></span>
+              <% if contact.phone.present? %>
+                <span class="text-xs text-slate-400 ml-2"><%= contact.phone %></span>
+              <% end %>
             </div>
             <div class="flex items-center gap-2">
               <span class="text-xs text-slate-500"><%= contact.company&.name %></span>
-              <%= button_to remove_contact_segment_path(@segment, contact_id: contact.id), method: :delete, data: { turbo_confirm: "Remover #{contact.full_name} do segmento?" }, class: "p-1.5 text-slate-500 hover:text-red-400 rounded transition" do %>
+              <%= button_to remove_contact_segment_path(@segment, contact_id: contact.id, filter: params[:filter].presence), method: :delete, data: { turbo_confirm: "Remover #{contact.full_name} do segmento?" }, class: "p-1.5 text-slate-500 hover:text-red-400 rounded transition" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
               <% end %>
             </div>

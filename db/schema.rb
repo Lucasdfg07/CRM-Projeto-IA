@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_26_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_27_100000) do
   create_table "activities", force: :cascade do |t|
     t.integer "contact_id", null: false
     t.integer "deal_id"
@@ -63,6 +63,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_26_120000) do
     t.integer "failed_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "recipient_filter", default: "email", null: false
   end
 
   create_table "companies", force: :cascade do |t|

@@ -34,7 +34,11 @@
       <div class="text-sm space-y-2">
         <div class="flex justify-between"><span class="text-slate-400">Assunto</span><span class="text-white"><%= @campaign.subject %></span></div>
         <div class="flex justify-between"><span class="text-slate-400">Provedor</span><span class="text-white"><%= @campaign.email_provider&.name || "—" %></span></div>
+        <div class="flex justify-between gap-4"><span class="text-slate-400 shrink-0">Filtro</span><span class="text-white text-right text-sm"><%= recipient_filter_label(@campaign.recipient_filter) %></span></div>
         <div class="flex justify-between"><span class="text-slate-400">Segmentos</span><span class="text-white"><%= @campaign.segments.map(&:name).join(", ").presence || "—" %></span></div>
+        <% unless @campaign.sent? %>
+          <div class="flex justify-between"><span class="text-slate-400">Destinatários (est.)</span><span class="text-white"><%= @campaign.recipient_count %></span></div>
+        <% end %>
         <% if @campaign.sent_at %>
           <div class="flex justify-between"><span class="text-slate-400">Enviado em</span><span class="text-white"><%= l(@campaign.sent_at, format: :short) %></span></div>
         <% end %>

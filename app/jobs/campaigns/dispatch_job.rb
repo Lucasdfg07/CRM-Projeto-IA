@@ -8,16 +8,11 @@ module Campaigns
       campaign = Campaign.find_by(id: campaign_id)
       return unless campaign&.sending?
 
-      # Build recipient list from segments
-      contacts = campaign.segments
-        .joins(:contacts)
-        .where.not(contacts: { email: [nil, ""] })
-        .select("contacts.id, contacts.first_name, contacts.last_name, contacts.email")
-        .distinct
+      contacts = campaign.contacts_for_dispatch
 
       campaign.update!(total_recipients: contacts.count)
 
-      contacts.each do |contact|
+      contacts.reorder(:id).each do |contact|
         recipient = campaign.campaign_recipients.create!(
           contact_id:   contact.id,
           email:        contact.email,

@@ -9,7 +9,8 @@ class SegmentsController < ApplicationController
 
   def show
     @contacts = @segment.contacts.includes(:company).order(:first_name)
-    @available_contacts = Contact.where.not(id: @segment.contact_ids).includes(:company).order(:first_name).limit(200)
+    available = Contact.where.not(id: @segment.contact_ids).includes(:company).order(:first_name)
+    @available_contacts = apply_segment_filter(available).limit(500)
   end
 
   def new
@@ -45,13 +46,13 @@ class SegmentsController < ApplicationController
     ids = params[:contact_ids].to_a.map(&:to_i).reject(&:zero?)
     contacts = Contact.where(id: ids)
     @segment.contacts << contacts - @segment.contacts
-    redirect_to @segment, notice: "#{contacts.count} contato(s) adicionado(s)."
+    redirect_to segment_path(@segment, filter: params[:filter].presence), notice: "#{contacts.count} contato(s) adicionado(s)."
   end
 
   def remove_contact
     contact = Contact.find(params[:contact_id])
     @segment.contacts.delete(contact)
-    redirect_to @segment, notice: "Contato removido do segmento."
+    redirect_to segment_path(@segment, filter: params[:filter].presence), notice: "Contato removido do segmento."
   end
 
   private
@@ -62,5 +63,18 @@ class SegmentsController < ApplicationController
 
   def segment_params
     params.require(:segment).permit(:name, :description, :color)
+  end
+
+  def apply_segment_filter(scope)
+    case params[:filter]
+    when "email"
+      scope.merge(Contact.with_email)
+    when "phone"
+      scope.merge(Contact.with_phone)
+    when "both"
+      scope.merge(Contact.with_email_and_phone)
+    else
+      scope
+    end
   end
 end

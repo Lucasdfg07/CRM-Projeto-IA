@@ -27,4 +27,8 @@ module ApplicationHelper
   def activity_kind_label(kind)
     I18n.t("crm.activity_kinds.#{kind}", default: kind.to_s.humanize)
   end
+
+  def recipient_filter_label(filter)
+    I18n.t("crm.recipient_filters.#{filter}", default: filter.to_s)
+  end
 end

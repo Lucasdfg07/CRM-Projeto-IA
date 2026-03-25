@@ -100,6 +100,10 @@ pt-BR:
         stage: Etapa
         probability: "Probabilidade (%)"
         expected_close_on: Previsão de fechamento
+      campaign:
+        name: Nome da campanha
+        subject: Assunto
+        recipient_filter: Filtro de destinatários
       activity:
         contact_id: Contato
         deal_id: Negócio
@@ -143,6 +147,17 @@ pt-BR:
       meeting: Reunião
       note: Nota
       task: Tarefa
+
+    recipient_filters:
+      email: "Destinatários com e-mail"
+      phone: "Com telefone (entre os do segmento; envio por e-mail só para quem também tiver e-mail)"
+      both: "E-mail e telefone obrigatórios"
+
+    segment_contact_filters:
+      all: "Todos os contatos"
+      email: "Só com e-mail"
+      phone: "Só com telefone"
+      both: "E-mail e telefone"
 
     user_roles:
       admin: Administrador

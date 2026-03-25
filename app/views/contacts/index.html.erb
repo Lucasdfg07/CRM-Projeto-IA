@@ -4,6 +4,41 @@
   <p class="text-sm text-slate-400">Todos os pontos de contato operacionais.</p>
 </div>
 
+<%= form_with url: contacts_path, method: :get, class: "mb-4 crm-glass rounded-xl p-4 flex flex-wrap gap-3 items-end" do %>
+  <div class="flex-1 min-w-[12rem]">
+    <label class="block text-xs font-medium text-slate-400 mb-1">Buscar</label>
+    <%= text_field_tag :q, params[:q], placeholder: "Nome, e-mail ou telefone…", class: "w-full bg-slate-900/80 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-500/40" %>
+  </div>
+  <div class="min-w-[10rem]">
+    <label class="block text-xs font-medium text-slate-400 mb-1">Empresa</label>
+    <%= select_tag :company_id,
+          options_from_collection_for_select(@companies, :id, :name, params[:company_id]),
+          include_blank: "Todas",
+          class: "w-full bg-slate-900/80 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-cyan-500/40" %>
+  </div>
+  <div class="min-w-[9rem]">
+    <label class="block text-xs font-medium text-slate-400 mb-1">Canal</label>
+    <%= select_tag :channel,
+          options_for_select([
+            ["Todos", ""],
+            [t("crm.segment_contact_filters.email"), "email"],
+            [t("crm.segment_contact_filters.phone"), "phone"],
+            [t("crm.segment_contact_filters.both"), "both"]
+          ], params[:channel]),
+          class: "w-full bg-slate-900/80 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-cyan-500/40" %>
+  </div>
+  <div class="min-w-[9rem]">
+    <label class="block text-xs font-medium text-slate-400 mb-1">Estágio</label>
+    <%= select_tag :lifecycle,
+          options_for_select([["Todos", ""]] + Contact::LIFECYCLES.map { |s| [lifecycle_label(s), s] }, params[:lifecycle]),
+          class: "w-full bg-slate-900/80 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-cyan-500/40" %>
+  </div>
+  <div class="flex gap-2">
+    <%= submit_tag "Filtrar", class: "bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium px-4 py-2 rounded-lg cursor-pointer transition" %>
+    <%= link_to "Limpar", contacts_path, class: "text-sm text-slate-400 hover:text-white px-2 py-2" %>
+  </div>
+<% end %>
+
 <div class="crm-glass overflow-x-auto p-0">
   <table class="min-w-full">
     <thead>
@@ -12,6 +47,7 @@
         <th class="crm-table-cell">Empresa</th>
         <th class="crm-table-cell">Estágio</th>
         <th class="crm-table-cell">E-mail</th>
+        <th class="crm-table-cell">Telefone</th>
       </tr>
     </thead>
     <tbody>
@@ -23,11 +59,12 @@
           <td class="crm-table-cell"><%= link_to c.company.name, c.company %></td>
           <td class="crm-table-cell"><span class="crm-badge"><%= lifecycle_label(c.lifecycle_stage) %></span></td>
           <td class="crm-table-cell"><%= c.email.presence || "—" %></td>
+          <td class="crm-table-cell text-slate-300"><%= c.phone.presence || "—" %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
   <% if @contacts.empty? %>
-    <p class="p-6 text-sm text-slate-500">Sem contatos — crie pela empresa.</p>
+    <p class="p-6 text-sm text-slate-500">Nenhum contato encontrado com esses filtros.</p>
   <% end %>
 </div>
