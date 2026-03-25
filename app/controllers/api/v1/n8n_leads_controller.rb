@@ -42,28 +42,48 @@ module Api
         JSON.parse(body)
       end
 
+      def extract_default_company_id_from_body(raw)
+        return if raw.is_a?(Array)
+
+        raw.is_a?(Hash) ? raw["company_id"].presence || raw["companyId"].presence : nil
+      end
+
       def normalize_items(raw)
+        root_cid = extract_default_company_id_from_body(raw)
         case raw
         when Array
-          raw
+          raw.map { |it| inject_company_id(it, root_cid) }
         when Hash
-          return raw["items"] if raw["items"].is_a?(Array)
-          return raw["leads"] if raw["leads"].is_a?(Array)
+          if raw["items"].is_a?(Array)
+            return raw["items"].map { |it| inject_company_id(it, root_cid) }
+          end
+          if raw["leads"].is_a?(Array)
+            return raw["leads"].map { |it| inject_company_id(it, root_cid) }
+          end
 
-          [raw]
+          [inject_company_id(raw, root_cid)]
         else
           []
         end
       end
 
+      def inject_company_id(item, root_cid)
+        h = item.deep_stringify_keys
+        h["company_id"] ||= root_cid if root_cid.present?
+        h
+      end
+
       # Não use Company.find sem contexto: vira 404 genérico ("Não encontrado") e confunde o n8n.
       def resolve_company(item)
-        cid = item["company_id"].presence || ENV["CRM_N8N_DEFAULT_COMPANY_ID"].presence
+        cid = item["company_id"].presence ||
+              params[:company_id].presence ||
+              ENV["CRM_N8N_DEFAULT_COMPANY_ID"].presence
         if cid.blank?
           return Company.first if Company.count == 1
 
           raise ActionController::BadRequest,
-                "Informe company_id no JSON do lead, ou defina CRM_N8N_DEFAULT_COMPANY_ID no servidor " \
+                "Informe company_id no JSON do lead (ou no envelope { \"company_id\": N, \"leads\": [...] }), " \
+                "ou na URL (?company_id=N), ou defina CRM_N8N_DEFAULT_COMPANY_ID no servidor " \
                 "(há mais de uma empresa no CRM)."
         end
 
