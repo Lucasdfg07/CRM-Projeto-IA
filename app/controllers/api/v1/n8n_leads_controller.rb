@@ -56,11 +56,24 @@ module Api
         end
       end
 
+      # Não use Company.find sem contexto: vira 404 genérico ("Não encontrado") e confunde o n8n.
       def resolve_company(item)
         cid = item["company_id"].presence || ENV["CRM_N8N_DEFAULT_COMPANY_ID"].presence
-        raise ActiveRecord::RecordNotFound, "company_id ausente (informe no JSON ou CRM_N8N_DEFAULT_COMPANY_ID)" if cid.blank?
+        if cid.blank?
+          return Company.first if Company.count == 1
 
-        Company.find(cid)
+          raise ActionController::BadRequest,
+                "Informe company_id no JSON do lead, ou defina CRM_N8N_DEFAULT_COMPANY_ID no servidor " \
+                "(há mais de uma empresa no CRM)."
+        end
+
+        company = Company.find_by(id: cid)
+        unless company
+          raise ActionController::BadRequest,
+                "Empresa id=#{cid.inspect} não existe. Use um id válido de /api/v1/companies."
+        end
+
+        company
       end
 
       def contact_json(c)
