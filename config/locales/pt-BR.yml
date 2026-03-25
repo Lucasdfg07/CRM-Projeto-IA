@@ -68,6 +68,20 @@ pt-BR:
         sector: Setor
         website: Site
         notes: Observações
+      form:
+        name: "Nome do formulário"
+        description: Descrição
+        slug: Slug
+        accent_color: "Cor de destaque"
+        target_segment_id: "Segmento alvo"
+        enabled: Ativo
+      form_field:
+        label: Pergunta
+        field_type: Tipo
+        required: Obrigatório
+        position: Posição
+        placeholder: Placeholder
+        options: Opções
       contact:
         first_name: Nome
         last_name: Sobrenome
