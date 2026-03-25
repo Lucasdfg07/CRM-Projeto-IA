@@ -12,4 +12,8 @@ class CampaignRecipient < ApplicationRecord
   scope :delivered, -> { where(status: "delivered") }
   scope :failed,    -> { where(status: "failed") }
   scope :pending,   -> { where(status: "pending") }
+
+  def pending?   = status == "pending"
+  def delivered? = status == "delivered"
+  def failed?    = status == "failed"
 end
