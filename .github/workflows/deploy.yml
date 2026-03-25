@@ -1,0 +1,40 @@
+# Deploy via SSH no VPS (Hostinger ou outro).
+#
+# Configure em: Repositório → Settings → Secrets and variables → Actions
+#   DEPLOY_HOST      — ex.: srv1522812.hstgr.cloud ou IP
+#   DEPLOY_USER      — ex.: root ou ubuntu
+#   DEPLOY_SSH_KEY   — chave privada SSH (conteúdo completo de id_rsa)
+#   DEPLOY_PATH      — pasta no servidor onde está o clone do repo (ex.: /opt/aiox-crm)
+#
+# Opcional:
+#   DEPLOY_PORT      — porta SSH (default 22)
+#
+# Acionar: Actions → Deploy → Run workflow (recomendado após configurar os secrets).
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e
+            cd "${{ secrets.DEPLOY_PATH }}"
+            git fetch origin main
+            git reset --hard origin/main
+            docker build -t aiox-crm:latest .
+            if docker ps -a --format '{{.Names}}' | grep -q '^aiox-crm$'; then
+              docker stop aiox-crm || true
+              docker rm aiox-crm || true
+            fi
+            docker run -d --name aiox-crm -p 3000:3000 --env-file .env --restart unless-stopped aiox-crm:latest
