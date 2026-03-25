@@ -1,8 +1,12 @@
-<% if record.errors.any? %>
+<%
+  target = local_assigns[:object] || local_assigns[:record]
+%>
+
+<% if target&.respond_to?(:errors) && target.errors.any? %>
   <div class="crm-glass-subtle border border-rose-400/40 bg-rose-500/10 p-4 text-sm text-rose-50">
-    <p class="font-semibold"><%= pluralize(record.errors.count, "erro") %>:</p>
+    <p class="font-semibold"><%= pluralize(target.errors.count, "erro") %>:</p>
     <ul class="mt-2 list-inside list-disc space-y-1">
-      <% record.errors.full_messages.each do |msg| %>
+      <% target.errors.full_messages.each do |msg| %>
         <li><%= msg %></li>
       <% end %>
     </ul>
