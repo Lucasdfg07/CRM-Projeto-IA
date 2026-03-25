@@ -28,6 +28,27 @@
     </div>
   <% end %>
 
+  <% if @campaign.sending? && @campaign.total_recipients.zero? && @campaign.recipient_count.positive? %>
+    <div class="mb-6 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95">
+      <p class="font-medium text-amber-200">Disparo ainda não atualizou os contadores</p>
+      <p class="mt-1 text-amber-100/90">
+        Com a regra atual há <strong><%= @campaign.recipient_count %></strong> destinatário(s) elegível(is), mas o total ainda está em zero.
+        Isso costuma indicar que o <strong>job de disparo não rodou neste processo</strong> (ex.: várias réplicas Docker com fila em memória) ou o worker caiu antes de processar.
+        Em um único container com Puma, tente reiniciar o serviço; ao escalar horizontalmente, use fila persistente (Solid Queue, Sidekiq, etc.).
+      </p>
+    </div>
+  <% end %>
+
+  <% if @campaign.sending? && @campaign.total_recipients.zero? && @campaign.recipient_count.zero? %>
+    <div class="mb-6 rounded-lg border border-slate-600 bg-slate-800/80 px-4 py-3 text-sm text-slate-300">
+      <p class="font-medium text-slate-200">Nenhum destinatário elegível no momento</p>
+      <p class="mt-1 text-slate-400">
+        Com o filtro <strong><%= recipient_filter_label(@campaign.recipient_filter) %></strong> e os segmentos atuais, não há contatos com e-mail para envio.
+        Se o filtro for <strong>“E-mail e telefone”</strong>, só entram contatos que tenham os dois. Se for só telefone, ainda é obrigatório ter e-mail para o envio.
+      </p>
+    </div>
+  <% end %>
+
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
     <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-3">
       <h2 class="font-semibold text-white">Detalhes</h2>

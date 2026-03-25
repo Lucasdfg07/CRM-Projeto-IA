@@ -36,7 +36,10 @@ class CampaignsController < ApplicationController
 
   def update
     @campaign.assign_attributes(campaign_params)
-    @campaign.segment_ids = params[:campaign][:segment_ids].to_a.reject(&:blank?).map(&:to_i)
+    # Sem esta chave no POST (ex.: submit parcial / integração), não zera segmentos por engano.
+    if params[:campaign]&.key?(:segment_ids)
+      @campaign.segment_ids = params[:campaign][:segment_ids].to_a.reject(&:blank?).map(&:to_i)
+    end
     if @campaign.save
       redirect_to @campaign, notice: "Campanha atualizada."
     else

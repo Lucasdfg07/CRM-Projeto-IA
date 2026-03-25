@@ -31,12 +31,17 @@ class Campaign < ApplicationRecord
   end
 
   # Contatos dos segmentos alvo, após filtro de e-mail/telefone (envio exige e-mail).
+  # Primeiro resolve IDs por segmento (sem merge em cima de joins), depois aplica filtros —
+  # evita SQL ambíguo/errado ao combinar joins(:segments) com merge(Contact.with_*).
   def contacts_for_dispatch
     return Contact.none if segment_ids.blank?
 
-    rel = Contact.joins(:segments).where(segments: { id: segment_ids })
+    base_ids = Contact.joins(:segments).where(segments: { id: segment_ids }).distinct.pluck(:id)
+    return Contact.none if base_ids.empty?
+
+    rel = Contact.where(id: base_ids)
     rel = apply_recipient_filter(rel)
-    rel.where.not(email: [nil, ""]).distinct
+    rel.where.not(email: [nil, ""])
   end
 
   def apply_recipient_filter(scope)

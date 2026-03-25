@@ -68,7 +68,9 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
-  # Use a real queuing backend for Active Job (and separate queues per environment).
+  # AsyncAdapter (padrão sem gem de fila) processa jobs em memória no mesmo processo do Puma.
+  # Com várias réplicas Docker, cada uma tem fila própria — jobs enfileirados em uma podem não existir na outra.
+  # Para escalar horizontalmente, use backend persistente (ex.: solid_queue) e processo `bin/jobs`.
   # config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "aiox_crm_production"
 
