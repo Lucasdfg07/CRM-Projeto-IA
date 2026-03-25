@@ -21,6 +21,9 @@ module Campaigns
         )
         Campaigns::SendEmailJob.perform_later(recipient.id)
       end
+
+      # Sem destinatários, nenhum SendEmailJob roda; a finalização precisa ocorrer aqui.
+      Campaigns::FinalizeDispatch.call(campaign.id)
     end
   end
 end
