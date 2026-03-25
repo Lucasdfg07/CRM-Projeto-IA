@@ -1,0 +1,71 @@
+<%= form_with model: provider, class: "space-y-6", data: { controller: "provider-form" } do |f| %>
+  <%= render "shared/errors", object: provider %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
+      <%= f.label :name, "Nome do provedor", class: "block text-sm font-medium text-slate-300 mb-1" %>
+      <%= f.text_field :name, placeholder: "Ex: Gmail Corporativo", class: "w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+    <div>
+      <%= f.label :provider_type, "Tipo", class: "block text-sm font-medium text-slate-300 mb-1" %>
+      <%= f.select :provider_type,
+            [["SMTP Customizado", "smtp"], ["Gmail", "gmail"], ["Hostinger", "hostinger"], ["Outlook / Office 365", "outlook"]],
+            {},
+            class: "w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500",
+            data: { action: "change->provider-form#fillDefaults" } %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div class="md:col-span-2">
+      <%= f.label :host, "Servidor SMTP", class: "block text-sm font-medium text-slate-300 mb-1" %>
+      <%= f.text_field :host, placeholder: "smtp.example.com", class: "w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+    <div>
+      <%= f.label :port, "Porta", class: "block text-sm font-medium text-slate-300 mb-1" %>
+      <%= f.number_field :port, class: "w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
+      <%= f.label :username, "Usuário (email)", class: "block text-sm font-medium text-slate-300 mb-1" %>
+      <%= f.email_field :username, class: "w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+    <div>
+      <%= f.label :smtp_password_input, "Senha / App Password", class: "block text-sm font-medium text-slate-300 mb-1" %>
+      <%= f.password_field :smtp_password_input, name: "email_provider[smtp_password_input]", placeholder: provider.persisted? ? "Deixe em branco para manter" : "", class: "w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
+      <%= f.label :from_name, "Nome de envio", class: "block text-sm font-medium text-slate-300 mb-1" %>
+      <%= f.text_field :from_name, placeholder: "Minha Empresa", class: "w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+    <div>
+      <%= f.label :from_email, "E-mail de envio", class: "block text-sm font-medium text-slate-300 mb-1" %>
+      <%= f.email_field :from_email, class: "w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-6">
+    <label class="flex items-center gap-2 cursor-pointer">
+      <%= f.check_box :starttls, class: "w-4 h-4 rounded accent-indigo-500" %>
+      <span class="text-sm text-slate-300">STARTTLS (recomendado para porta 587)</span>
+    </label>
+    <label class="flex items-center gap-2 cursor-pointer">
+      <%= f.check_box :ssl, class: "w-4 h-4 rounded accent-indigo-500" %>
+      <span class="text-sm text-slate-300">SSL/TLS (porta 465)</span>
+    </label>
+    <label class="flex items-center gap-2 cursor-pointer">
+      <%= f.check_box :enabled, class: "w-4 h-4 rounded accent-indigo-500" %>
+      <span class="text-sm text-slate-300">Provedor habilitado</span>
+    </label>
+  </div>
+
+  <div class="flex gap-3 pt-2">
+    <%= f.submit class: "bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-2.5 rounded-lg cursor-pointer transition" %>
+    <%= link_to "Cancelar", email_providers_path, class: "bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium px-6 py-2.5 rounded-lg transition" %>
+  </div>
+<% end %>

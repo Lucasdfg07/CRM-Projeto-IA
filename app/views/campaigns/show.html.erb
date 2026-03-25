@@ -1,0 +1,83 @@
+<% status_colors = { "draft" => "bg-slate-600 text-slate-300", "sending" => "bg-amber-500/20 text-amber-400", "sent" => "bg-emerald-500/20 text-emerald-400", "cancelled" => "bg-red-500/20 text-red-400", "scheduled" => "bg-blue-500/20 text-blue-400" } %>
+<% status_labels = { "draft" => "Rascunho", "sending" => "Enviando...", "sent" => "Enviado", "cancelled" => "Cancelado", "scheduled" => "Agendado" } %>
+
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to campaigns_path, class: "text-slate-400 hover:text-white transition" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    <% end %>
+    <h1 class="text-2xl font-bold text-white flex-1"><%= @campaign.name %></h1>
+    <span class="text-xs px-3 py-1 rounded-full <%= status_colors[@campaign.status] %>"><%= status_labels[@campaign.status] %></span>
+  </div>
+
+  <!-- Stats -->
+  <% if @campaign.sent? || @campaign.sending? %>
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center">
+        <p class="text-2xl font-bold text-white"><%= @campaign.total_recipients %></p>
+        <p class="text-xs text-slate-400 mt-1">Destinatários</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center">
+        <p class="text-2xl font-bold text-emerald-400"><%= @campaign.delivered_count %></p>
+        <p class="text-xs text-slate-400 mt-1">Entregues</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center">
+        <p class="text-2xl font-bold text-red-400"><%= @campaign.failed_count %></p>
+        <p class="text-xs text-slate-400 mt-1">Falhas</p>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-3">
+      <h2 class="font-semibold text-white">Detalhes</h2>
+      <div class="text-sm space-y-2">
+        <div class="flex justify-between"><span class="text-slate-400">Assunto</span><span class="text-white"><%= @campaign.subject %></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Provedor</span><span class="text-white"><%= @campaign.email_provider&.name || "—" %></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">Segmentos</span><span class="text-white"><%= @campaign.segments.map(&:name).join(", ").presence || "—" %></span></div>
+        <% if @campaign.sent_at %>
+          <div class="flex justify-between"><span class="text-slate-400">Enviado em</span><span class="text-white"><%= l(@campaign.sent_at, format: :short) %></span></div>
+        <% end %>
+      </div>
+    </div>
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+      <h2 class="font-semibold text-white mb-3">Ações</h2>
+      <div class="flex flex-col gap-2">
+        <% if @campaign.draft? || @campaign.scheduled? %>
+          <%= button_to send_campaign_campaign_path(@campaign), method: :post, data: { turbo_confirm: "Enviar campanha agora?" }, class: "w-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium py-2.5 rounded-lg transition" do %>
+            Enviar Campanha
+          <% end %>
+        <% end %>
+        <%= link_to preview_campaign_path(@campaign), target: "_blank", class: "block w-full text-center bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm py-2.5 rounded-lg transition" do %>Visualizar Email<% end %>
+        <%= link_to edit_campaign_path(@campaign), class: "block w-full text-center bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 text-sm py-2.5 rounded-lg transition" do %>Editar<% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recipients -->
+  <% if @recipients.any? %>
+    <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-700">
+        <h2 class="font-semibold text-white">Destinatários</h2>
+      </div>
+      <div class="divide-y divide-slate-700">
+        <% @recipients.each do |r| %>
+          <div class="px-5 py-3 flex items-center justify-between text-sm">
+            <div>
+              <span class="text-white"><%= r.contact_name.presence || r.email %></span>
+              <span class="text-slate-500 ml-2"><%= r.email %></span>
+            </div>
+            <% status_cls = { "delivered" => "text-emerald-400", "failed" => "text-red-400", "pending" => "text-amber-400" } %>
+            <% status_lbl = { "delivered" => "Entregue", "failed" => "Falhou", "pending" => "Pendente" } %>
+            <div class="flex items-center gap-3">
+              <% if r.error_message.present? %>
+                <span class="text-xs text-slate-500 truncate max-w-48" title="<%= r.error_message %>"><%= r.error_message.truncate(50) %></span>
+              <% end %>
+              <span class="text-xs <%= status_cls[r.status] %>"><%= status_lbl[r.status] %></span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

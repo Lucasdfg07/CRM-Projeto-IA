@@ -10,6 +10,13 @@
       <%= link_to "Contatos", contacts_path, class: nav_class(contacts_path) %>
       <%= link_to "Negócios", deals_path, class: nav_class(deals_path) %>
       <%= link_to "Atividades", activities_path, class: nav_class(activities_path) %>
+
+      <div class="pt-3 pb-1">
+        <p class="px-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Email Marketing</p>
+      </div>
+      <%= link_to "Provedores", email_providers_path, class: nav_class(email_providers_path) %>
+      <%= link_to "Segmentos", segments_path, class: nav_class(segments_path) %>
+      <%= link_to "Campanhas", campaigns_path, class: nav_class(campaigns_path) %>
     </nav>
     <div class="crm-glass-subtle mt-8 space-y-2 p-3 text-xs text-slate-400">
       <p class="font-semibold text-cyan-200/80">API N8N</p>

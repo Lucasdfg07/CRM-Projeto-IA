@@ -1,0 +1,56 @@
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-white">Provedores de Email</h1>
+      <p class="text-slate-400 text-sm mt-1">Configure seus serviços de disparo de email</p>
+    </div>
+    <%= link_to new_email_provider_path, class: "flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Novo Provedor
+    <% end %>
+  </div>
+
+  <% if @providers.empty? %>
+    <div class="text-center py-20 bg-slate-800/50 rounded-2xl border border-slate-700">
+      <svg class="w-12 h-12 mx-auto text-slate-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      <p class="text-slate-400">Nenhum provedor configurado ainda.</p>
+      <%= link_to "Adicionar primeiro provedor", new_email_provider_path, class: "mt-3 inline-block text-indigo-400 hover:text-indigo-300 text-sm" %>
+    </div>
+  <% else %>
+    <div class="grid gap-4">
+      <% @providers.each do |provider| %>
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center <%= provider.enabled? ? 'bg-indigo-600/20' : 'bg-slate-700' %>">
+              <svg class="w-5 h-5 <%= provider.enabled? ? 'text-indigo-400' : 'text-slate-500' %>" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-white"><%= provider.name %></span>
+                <% if provider.is_default? %>
+                  <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">Padrão</span>
+                <% end %>
+                <% unless provider.enabled? %>
+                  <span class="text-xs bg-slate-600 text-slate-400 px-2 py-0.5 rounded-full">Desabilitado</span>
+                <% end %>
+              </div>
+              <p class="text-sm text-slate-400"><%= provider.username %> · <%= provider.host %>:<%= provider.port %></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <%= button_to test_connection_email_provider_path(provider), method: :post, class: "text-xs text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg transition" do %>
+              Testar
+            <% end %>
+            <% unless provider.is_default? %>
+              <%= button_to set_default_email_provider_path(provider), method: :post, class: "text-xs text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg transition" do %>
+                Definir padrão
+              <% end %>
+            <% end %>
+            <%= link_to edit_email_provider_path(provider), class: "text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-600/10 hover:bg-indigo-600/20 px-3 py-1.5 rounded-lg transition" do %>Editar<% end %>
+            <%= button_to email_provider_path(provider), method: :delete, data: { turbo_confirm: "Remover #{provider.name}?" }, class: "text-xs text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-lg transition" do %>Remover<% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

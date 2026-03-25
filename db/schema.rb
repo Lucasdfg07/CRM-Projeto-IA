@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_24_190755) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_25_200003) do
   create_table "activities", force: :cascade do |t|
     t.integer "contact_id", null: false
     t.integer "deal_id"
@@ -26,6 +26,45 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_24_190755) do
     t.index ["user_id"], name: "index_activities_on_user_id"
   end
 
+  create_table "campaign_recipients", force: :cascade do |t|
+    t.integer "campaign_id", null: false
+    t.integer "contact_id"
+    t.string "email", null: false
+    t.string "contact_name"
+    t.string "status", default: "pending"
+    t.datetime "sent_at"
+    t.string "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_campaign_recipients_on_campaign_id"
+    t.index ["status"], name: "index_campaign_recipients_on_status"
+  end
+
+  create_table "campaign_segments", id: false, force: :cascade do |t|
+    t.integer "campaign_id", null: false
+    t.integer "segment_id", null: false
+    t.index ["campaign_id", "segment_id"], name: "index_campaign_segments_on_campaign_id_and_segment_id", unique: true
+  end
+
+  create_table "campaigns", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "subject", null: false
+    t.string "preview_text"
+    t.text "html_body"
+    t.string "status", default: "draft"
+    t.integer "email_provider_id"
+    t.string "from_name"
+    t.string "from_email"
+    t.string "reply_to"
+    t.datetime "scheduled_at"
+    t.datetime "sent_at"
+    t.integer "total_recipients", default: 0
+    t.integer "delivered_count", default: 0
+    t.integer "failed_count", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "companies", force: :cascade do |t|
     t.string "name"
     t.string "sector"
@@ -33,6 +72,14 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_24_190755) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "contact_segments", id: false, force: :cascade do |t|
+    t.integer "contact_id", null: false
+    t.integer "segment_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["contact_id", "segment_id"], name: "index_contact_segments_on_contact_id_and_segment_id", unique: true
+    t.index ["segment_id"], name: "index_contact_segments_on_segment_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -63,6 +110,31 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_24_190755) do
     t.index ["contact_id"], name: "index_deals_on_contact_id"
   end
 
+  create_table "email_providers", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "provider_type", default: "smtp", null: false
+    t.string "host"
+    t.integer "port", default: 587
+    t.string "username"
+    t.string "encrypted_smtp_password"
+    t.string "from_name"
+    t.string "from_email"
+    t.boolean "ssl", default: false
+    t.boolean "starttls", default: true
+    t.boolean "is_default", default: false
+    t.boolean "enabled", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "segments", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.string "color", default: "#6366f1"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.string "password_digest"
@@ -75,6 +147,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_24_190755) do
   add_foreign_key "activities", "contacts"
   add_foreign_key "activities", "deals"
   add_foreign_key "activities", "users"
+  add_foreign_key "campaign_recipients", "campaigns", on_delete: :cascade
+  add_foreign_key "campaign_segments", "campaigns", on_delete: :cascade
+  add_foreign_key "campaign_segments", "segments", on_delete: :cascade
+  add_foreign_key "contact_segments", "contacts", on_delete: :cascade
+  add_foreign_key "contact_segments", "segments", on_delete: :cascade
   add_foreign_key "contacts", "companies"
   add_foreign_key "deals", "companies"
   add_foreign_key "deals", "contacts"

@@ -8,6 +8,9 @@ class Contact < ApplicationRecord
   belongs_to :company
   has_many :deals, dependent: :nullify
   has_many :activities, dependent: :destroy
+  has_and_belongs_to_many :segments,
+    join_table: :contact_segments,
+    foreign_key: :contact_id
 
   validates :first_name, presence: true
   validates :lifecycle_stage, inclusion: { in: LIFECYCLES }, allow_blank: true

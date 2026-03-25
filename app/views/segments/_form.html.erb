@@ -1,0 +1,26 @@
+<%= form_with model: segment, class: "space-y-5" do |f| %>
+  <%= render "shared/errors", object: segment %>
+
+  <div>
+    <%= f.label :name, "Nome do segmento", class: "block text-sm font-medium text-slate-300 mb-1" %>
+    <%= f.text_field :name, placeholder: "Ex: Compradores de sapato bico fino", class: "w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+  </div>
+
+  <div>
+    <%= f.label :description, "Descrição", class: "block text-sm font-medium text-slate-300 mb-1" %>
+    <%= f.text_area :description, rows: 2, placeholder: "Descreva este segmento...", class: "w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+  </div>
+
+  <div>
+    <%= f.label :color, "Cor", class: "block text-sm font-medium text-slate-300 mb-1" %>
+    <div class="flex items-center gap-3">
+      <%= f.color_field :color, class: "w-12 h-10 rounded-lg border border-slate-600 bg-slate-800 cursor-pointer p-1" %>
+      <span class="text-sm text-slate-400">Escolha uma cor para identificar o segmento</span>
+    </div>
+  </div>
+
+  <div class="flex gap-3">
+    <%= f.submit class: "bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-2.5 rounded-lg cursor-pointer transition" %>
+    <%= link_to "Cancelar", segments_path, class: "bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium px-6 py-2.5 rounded-lg transition" %>
+  </div>
+<% end %>

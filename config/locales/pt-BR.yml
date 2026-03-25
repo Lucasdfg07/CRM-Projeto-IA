@@ -22,6 +22,15 @@ pt-BR:
       activity:
         create: "Registrar atividade"
         update: "Atualizar atividade"
+      email_provider:
+        create: "Salvar provedor"
+        update: "Atualizar provedor"
+      segment:
+        create: "Salvar segmento"
+        update: "Atualizar segmento"
+      campaign:
+        create: "Salvar rascunho"
+        update: "Atualizar campanha"
 
   activerecord:
     models:
@@ -40,6 +49,18 @@ pt-BR:
       user:
         one: Usuário
         other: Usuários
+      email_provider:
+        one: Provedor de Email
+        other: Provedores de Email
+      segment:
+        one: Segmento
+        other: Segmentos
+      campaign:
+        one: Campanha
+        other: Campanhas
+      campaign_recipient:
+        one: Destinatário
+        other: Destinatários
 
     attributes:
       company:
