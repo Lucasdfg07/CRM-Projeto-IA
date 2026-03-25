@@ -28,6 +28,18 @@
     </p>
   </div>
 
+  <div data-provider-form-target="hostingerHint" class="hidden rounded-xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-sm text-sky-100/95">
+    <p class="font-medium text-sky-200">Hostinger</p>
+    <p class="mt-1 text-sky-100/90">
+      Use o <strong>e-mail completo da caixa</strong> como usuário e a <strong>senha dessa caixa</strong> criada no hPanel (E-mails).
+      Servidor típico: <code class="text-sky-200">smtp.hostinger.com</code>, porta <strong>587</strong> com STARTTLS (ou <strong>465</strong> com SSL).
+      Se aparecer erro <code class="text-sky-200">5.7.8</code> típico do Google, confira se o host SMTP não está apontando para Gmail ou se o domínio usa outro provedor de e-mail.
+    </p>
+    <p class="mt-2 text-xs text-sky-200/80">
+      <a href="https://support.hostinger.com/en/articles/1575756-how-to-get-email-account-configuration-details" class="underline hover:text-white" target="_blank" rel="noopener">Configuração de e-mail (Hostinger)</a>
+    </p>
+  </div>
+
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
     <div class="md:col-span-2">
       <%= f.label :host, "Servidor SMTP", class: "block text-sm font-medium text-slate-300 mb-1" %>
