@@ -1,0 +1,52 @@
+<div class="bg-slate-900 border border-white/10 rounded-xl p-4 space-y-3 relative">
+  <div class="flex items-center justify-between gap-3">
+    <div class="flex items-center gap-2 min-w-0">
+      <span class="text-[10px] uppercase tracking-widest text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full flex-shrink-0"><%= f.object.field_type %></span>
+      <span class="text-xs text-slate-400 truncate">Campo</span>
+    </div>
+    <button type="button" data-action="click->form-builder#removeField" class="text-xs text-rose-200 bg-rose-500/10 hover:bg-rose-500/20 px-2 py-1 rounded-lg transition">
+      Remover
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="md:col-span-2">
+      <%= f.label :label, "Rótulo", class: "block text-xs font-medium text-slate-400 mb-1" %>
+      <%= f.text_field :label, class: "w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400" %>
+    </div>
+
+    <div>
+      <%= f.label :field_type, "Tipo", class: "block text-xs font-medium text-slate-400 mb-1" %>
+      <%= f.select :field_type,
+            FormField::FIELD_TYPES.map { |t| [t, t] },
+            {},
+            class: "w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400" %>
+    </div>
+
+    <div>
+      <%= f.label :placeholder, "Placeholder (opcional)", class: "block text-xs font-medium text-slate-400 mb-1" %>
+      <%= f.text_field :placeholder, class: "w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400" %>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-5 items-center">
+    <label class="flex items-center gap-2 cursor-pointer">
+      <%= f.check_box :required, class: "w-4 h-4 rounded accent-cyan-400" %>
+      <span class="text-sm text-slate-300">Obrigatório</span>
+    </label>
+    <div class="flex items-center gap-2">
+      <span class="text-xs text-slate-500">Posição</span>
+      <%= f.number_field :position, min: 1, class: "w-20 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400" %>
+    </div>
+  </div>
+
+  <div class="mt-2">
+    <%= f.label :options, "Opções (apenas para select) — uma por linha", class: "block text-xs font-medium text-slate-400 mb-1" %>
+    <%= f.text_area :options, rows: 2, value: (f.object.options.is_a?(Array) ? f.object.options.join("\n") : f.object.options.to_s), class: "w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400" %>
+    <p class="text-xs text-slate-600 mt-1">Ex: “Compradores”, “Curiosos”, “VIP”.</p>
+  </div>
+
+  <%= f.hidden_field :id if f.object.persisted? %>
+  <%= f.hidden_field :_destroy, value: "0", data: { form_builder_target: "destroy" } %>
+</div>
+

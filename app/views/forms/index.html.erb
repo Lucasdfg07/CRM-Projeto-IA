@@ -1,0 +1,53 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-white">Formulários</h1>
+      <p class="text-slate-400 text-sm mt-1">Crie formulários estilo Typeform e segmente leads automaticamente</p>
+    </div>
+    <%= link_to new_form_path, class: "flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-sm font-semibold px-4 py-2 rounded-lg transition" do %>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Novo Formulário
+    <% end %>
+  </div>
+
+  <% if @forms.empty? %>
+    <div class="text-center py-20 bg-slate-800/50 rounded-2xl border border-slate-700">
+      <svg class="w-14 h-14 mx-auto text-slate-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z"/></svg>
+      <p class="text-slate-400">Nenhum formulário criado ainda.</p>
+      <%= link_to "Criar primeiro formulário", new_form_path, class: "mt-3 inline-block text-cyan-300 hover:text-cyan-200 text-sm" %>
+    </div>
+  <% else %>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <% @forms.each do |form| %>
+        <div class="bg-slate-900/70 border border-white/10 rounded-2xl p-5 backdrop-blur-xl shadow-[0_0_0_1px_rgba(34,211,238,0.12),0_18px_60px_rgba(0,0,0,0.55)]">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex w-2.5 h-2.5 rounded-full" style="background:<%= form.accent_color %>"></span>
+                <h2 class="font-semibold text-white truncate"><%= form.name %></h2>
+              </div>
+              <p class="text-xs text-slate-500 mt-1 truncate">Slug: <code class="text-slate-300/80"><%= form.slug %></code></p>
+              <p class="text-xs text-slate-500 mt-1">
+                Segmento alvo:
+                <span class="text-slate-300"><%= form.target_segment&.name || "—" %></span>
+              </p>
+            </div>
+            <% if form.enabled? %>
+              <span class="text-xs bg-emerald-500/15 text-emerald-300 px-2 py-0.5 rounded-full">Ativo</span>
+            <% else %>
+              <span class="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full">Pausado</span>
+            <% end %>
+          </div>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+            <%= link_to "Abrir", form_path(form), class: "text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg transition" %>
+            <%= link_to "Editar", edit_form_path(form), class: "text-xs bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-200 px-3 py-1.5 rounded-lg transition" %>
+            <%= link_to "Link público", public_form_path(form.slug), target: "_blank", class: "text-xs bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-200 px-3 py-1.5 rounded-lg transition" %>
+            <%= button_to "Remover", form_path(form), method: :delete, data: { turbo_confirm: "Remover formulário #{form.name}?" }, class: "text-xs bg-rose-500/10 hover:bg-rose-500/20 text-rose-200 px-3 py-1.5 rounded-lg transition" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+

@@ -1,0 +1,111 @@
+<% segments = Segment.order(:name) %>
+
+<%= form_with model: form, class: "space-y-0", data: { controller: "form-builder" } do |f| %>
+  <%= render "shared/errors", object: form %>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left: settings -->
+    <div class="space-y-5">
+      <div class="bg-slate-900/70 border border-white/10 rounded-2xl p-5 space-y-4 backdrop-blur-xl">
+        <h2 class="font-semibold text-white text-sm uppercase tracking-wider">Configurações</h2>
+
+        <div>
+          <%= f.label :name, "Nome", class: "block text-xs font-medium text-slate-400 mb-1" %>
+          <%= f.text_field :name, placeholder: "Ex: Lead Magnético — Natal 2026", class: "w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400" %>
+        </div>
+
+        <div>
+          <%= f.label :description, "Descrição (opcional)", class: "block text-xs font-medium text-slate-400 mb-1" %>
+          <%= f.text_area :description, rows: 2, placeholder: "Uma frase curta para contexto…", class: "w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400" %>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <%= f.label :accent_color, "Cor de destaque", class: "block text-xs font-medium text-slate-400 mb-1" %>
+            <div class="flex items-center gap-3">
+              <%= f.color_field :accent_color, class: "w-12 h-10 rounded-lg border border-slate-700 bg-slate-950 cursor-pointer p-1" %>
+              <span class="text-xs text-slate-500">Neo-cyan</span>
+            </div>
+          </div>
+          <div>
+            <%= f.label :slug, "Slug público", class: "block text-xs font-medium text-slate-400 mb-1" %>
+            <%= f.text_field :slug, placeholder: "auto-gerado", class: "w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-400" %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :target_segment_id, "Segmento alvo", class: "block text-xs font-medium text-slate-400 mb-1" %>
+          <%= f.select :target_segment_id,
+                segments.map { |s| ["#{s.name} (#{s.contacts_count})", s.id] },
+                { include_blank: "Nenhum (não segmentar automaticamente)" },
+                class: "w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400" %>
+          <p class="text-xs text-slate-600 mt-1">Ao responder, o lead será adicionado a este segmento.</p>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <%= f.check_box :enabled, class: "w-4 h-4 rounded accent-cyan-400" %>
+            <span class="text-sm text-slate-300">Formulário ativo</span>
+          </label>
+          <% if form.persisted? %>
+            <%= link_to "Abrir link público", public_form_path(form.slug), target: "_blank", class: "text-xs text-cyan-300 hover:text-cyan-200" %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <%= f.submit form.persisted? ? "Salvar alterações" : "Criar formulário", class: "w-full bg-cyan-400 hover:bg-cyan-300 text-slate-950 text-sm font-semibold py-2.5 rounded-lg cursor-pointer transition" %>
+        <%= link_to "Cancelar", forms_path, class: "block w-full text-center bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm py-2.5 rounded-lg transition" %>
+      </div>
+    </div>
+
+    <!-- Right: builder -->
+    <div class="lg:col-span-2 space-y-4">
+      <div class="bg-slate-900/70 border border-white/10 rounded-2xl p-4 backdrop-blur-xl flex flex-wrap gap-2 items-center">
+        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider mr-1">Adicionar campo:</span>
+        <% presets = [
+          ["Texto", "text"],
+          ["Texto longo", "textarea"],
+          ["E-mail", "email"],
+          ["Telefone", "phone"],
+          ["Seleção", "select"]
+        ] %>
+        <% presets.each do |label, type| %>
+          <button type="button"
+                  data-action="click->form-builder#addField"
+                  data-field-type="<%= type %>"
+                  class="text-xs bg-slate-800 hover:bg-cyan-400/20 text-slate-200 hover:text-cyan-100 px-3 py-1.5 rounded-lg transition">
+            <%= label %>
+          </button>
+        <% end %>
+        <div class="ml-auto text-xs text-slate-500">
+          Dica: inclua um campo <span class="text-slate-300">E-mail</span> para criar o contato automaticamente.
+        </div>
+      </div>
+
+      <div class="bg-slate-950/60 border border-white/10 rounded-2xl p-4 backdrop-blur-xl">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-semibold text-white text-sm uppercase tracking-wider">Campos do formulário</h2>
+          <span class="text-xs text-slate-500">Arraste/ordene na próxima iteração</span>
+        </div>
+
+        <div class="space-y-3" data-form-builder-target="fields">
+          <%= f.fields_for :form_fields do |ff| %>
+            <%= render "field", f: ff %>
+          <% end %>
+        </div>
+
+        <template data-form-builder-target="template">
+          <%= f.fields_for :form_fields, FormField.new, child_index: "NEW_RECORD" do |ff| %>
+            <%= render "field", f: ff %>
+          <% end %>
+        </template>
+      </div>
+
+      <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3 text-xs text-indigo-200">
+        <strong>Segmentação automática:</strong> se o formulário tiver “Segmento alvo”, o lead será adicionado nesse segmento e poderá ser usado em campanhas em <code class="bg-indigo-500/20 px-1 rounded">Campanhas</code>.
+      </div>
+    </div>
+  </div>
+<% end %>
+

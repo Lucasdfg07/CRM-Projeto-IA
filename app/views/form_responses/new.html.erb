@@ -1,0 +1,73 @@
+<div class="min-h-screen bg-slate-950 text-white">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full blur-3xl opacity-20"
+         style="background: radial-gradient(circle at center, <%= @form.accent_color %>, transparent 60%);"></div>
+  </div>
+
+  <div class="relative max-w-2xl mx-auto px-4 py-14">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1 text-xs text-slate-300">
+        <span class="w-2 h-2 rounded-full" style="background:<%= @form.accent_color %>"></span>
+        AIOX Forms · <span class="text-slate-400">captura inteligente</span>
+      </div>
+      <h1 class="mt-4 text-3xl font-bold tracking-tight"><%= @form.name %></h1>
+      <% if @form.description.present? %>
+        <p class="mt-2 text-slate-400"><%= @form.description %></p>
+      <% end %>
+    </div>
+
+    <div class="bg-slate-900/70 border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_18px_80px_rgba(0,0,0,0.6)]">
+      <% if flash[:alert].present? %>
+        <div class="mb-4 bg-rose-500/10 border border-rose-500/25 text-rose-200 text-sm rounded-xl px-4 py-3">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+
+      <%= form_with url: public_form_path(@form.slug), method: :post, class: "space-y-4" do %>
+        <% @fields.each do |field| %>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">
+              <%= field.label %>
+              <% if field.required? %>
+                <span class="text-rose-300">*</span>
+              <% end %>
+            </label>
+
+            <% base = "w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-2" %>
+            <% ring = "focus:ring-[#{@form.accent_color}]" %>
+            <% cls = "#{base} #{ring}" %>
+
+            <% case field.field_type %>
+            <% when "textarea" %>
+              <textarea name="answers[<%= field.id %>]" rows="4" class="<%= cls %>" placeholder="<%= field.placeholder %>" <%= "required" if field.required? %>></textarea>
+            <% when "select" %>
+              <select name="answers[<%= field.id %>]" class="<%= cls %>" <%= "required" if field.required? %>>
+                <option value="">Selecione…</option>
+                <% field.options_list.each do |opt| %>
+                  <option value="<%= opt %>"><%= opt %></option>
+                <% end %>
+              </select>
+            <% when "email" %>
+              <input type="email" name="answers[<%= field.id %>]" class="<%= cls %>" placeholder="<%= field.placeholder.presence || "voce@exemplo.com" %>" <%= "required" if field.required? %>>
+            <% when "phone" %>
+              <input type="tel" name="answers[<%= field.id %>]" class="<%= cls %>" placeholder="<%= field.placeholder.presence || "+55 11 99999-0000" %>" <%= "required" if field.required? %>>
+            <% else %>
+              <input type="text" name="answers[<%= field.id %>]" class="<%= cls %>" placeholder="<%= field.placeholder %>" <%= "required" if field.required? %>>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full text-slate-950 font-semibold rounded-xl py-3 transition"
+                  style="background:<%= @form.accent_color %>">
+            Enviar resposta
+          </button>
+          <p class="text-xs text-slate-500 mt-3 text-center">
+            Ao enviar, seu contato pode ser adicionado a um segmento para receber campanhas.
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
