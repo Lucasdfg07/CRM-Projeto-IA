@@ -4,6 +4,7 @@ class Contact < ApplicationRecord
   include N8nBroadcastable
 
   LIFECYCLES = %w[lead prospect customer churned].freeze
+  LEAD_TEMPERATURES = %w[frio morno quente].freeze
 
   belongs_to :company
   has_many :deals, dependent: :nullify
@@ -14,16 +15,37 @@ class Contact < ApplicationRecord
 
   validates :first_name, presence: true
   validates :lifecycle_stage, inclusion: { in: LIFECYCLES }, allow_blank: true
+  validates :lead_temperature, inclusion: { in: LEAD_TEMPERATURES }, allow_blank: true
 
   before_validation :default_lifecycle
+  before_validation :normalize_email_field
+  before_validation :sync_phone_normalized
 
   def full_name
     [first_name, last_name].compact_blank.join(" ").presence || email.presence || "Contato ##{id}"
+  end
+
+  def self.normalize_phone(phone)
+    return nil if phone.blank?
+
+    phone.to_s.gsub(/\D/, "").presence
+  end
+
+  def self.normalize_email_string(email)
+    email.to_s.strip.downcase.presence
   end
 
   private
 
   def default_lifecycle
     self.lifecycle_stage ||= "lead"
+  end
+
+  def normalize_email_field
+    self.email = self.class.normalize_email_string(email)
+  end
+
+  def sync_phone_normalized
+    self.phone_normalized = phone.present? ? self.class.normalize_phone(phone) : nil
   end
 end

@@ -44,12 +44,19 @@ module Api
       end
 
       def contact_params
-        params.require(:contact).permit(:company_id, :first_name, :last_name, :email, :phone, :title, :lifecycle_stage)
+        params.require(:contact).permit(
+          :company_id, :first_name, :last_name, :email, :phone, :title, :lifecycle_stage,
+          :lead_temperature, :external_source_id, lead_metadata: {}
+        )
       end
 
       def contact_json(c)
-        c.as_json(only: %i[id company_id first_name last_name email phone title lifecycle_stage created_at updated_at])
-          .merge("company_name" => c.company&.name)
+        c.as_json(
+          only: %i[
+            id company_id first_name last_name email phone phone_normalized title lifecycle_stage
+            lead_temperature lead_metadata external_source_id created_at updated_at
+          ]
+        ).merge("company_name" => c.company&.name)
       end
     end
   end

@@ -203,6 +203,9 @@ Copie `.env.example` para `.env` e preencha:
 # API REST — token de autenticação Bearer
 CRM_API_TOKEN=seu-token-seguro-aqui  # gere com: rake crm:api_token
 
+# Empresa padrão para ingestão n8n (POST /api/v1/n8n_leads) quando company_id não vier no JSON
+CRM_N8N_DEFAULT_COMPANY_ID=1
+
 # N8N — integração de webhooks (opcional)
 N8N_WEBHOOK_URL=https://sua-instancia-n8n.com/webhook/crm
 N8N_WEBHOOK_SECRET=seu-hmac-secret  # opcional, para verificação HMAC
@@ -234,6 +237,8 @@ Autenticação: `Authorization: Bearer <CRM_API_TOKEN>`
 | `GET` | `/api/v1/contacts?company_id=X` | Listar contatos (filtro opcional) |
 | `GET` | `/api/v1/deals?company_id=X` | Listar negócios (filtro opcional) |
 | `GET` | `/api/v1/activities?contact_id=X&deal_id=Y` | Listar atividades (filtros opcionais) |
+| `POST` | `/api/v1/n8n_leads` | Criar ou atualizar lead a partir do n8n (WhatsApp / agente de IA) — ver abaixo |
+| `PATCH` | `/api/v1/contacts/:id` | Atualizar contato (inclui `lead_temperature`, `lead_metadata`, `external_source_id`) |
 
 ### Exemplo de requisição
 
@@ -241,6 +246,30 @@ Autenticação: `Authorization: Bearer <CRM_API_TOKEN>`
 curl -H "Authorization: Bearer seu-token" \
      https://seu-dominio.com/api/v1/companies
 ```
+
+### Ingestão de leads (n8n → CRM)
+
+`POST /api/v1/n8n_leads`
+
+- **Auth:** `Authorization: Bearer <CRM_API_TOKEN>`
+- **Body:** JSON — **array** de objetos (como no seu fluxo) **ou** um único objeto, **ou** `{ "leads": [ ... ] }` / `{ "items": [ ... ] }`.
+- **Empresa:** em cada item inclua `"company_id": <id>` **ou** defina `CRM_N8N_DEFAULT_COMPANY_ID` no servidor.
+- **Deduplicação:** o CRM localiza o contato por `external_source_id` **ou** `whatsapp_chat_id` **ou** `conversation_id` (prioridade nessa ordem), depois por `email`, depois por `telefone`/`phone` (apenas dígitos).
+- **Campos principais:** `email`, `telefone` (ou `phone`), `temperatura_lead` (`frio` \| `morno` \| `quente`), `tipo_atendimento`, `descricao_crm`, `justificativa_temperatura`, `sugestoes_campanhas`, `proximo_passo`, `mensagem_cliente`, `crm_payload` (mesclado com o objeto raiz; corrige o typo `justificativa_temperativa` → `justificativa_temperatura`).
+- **Segmento opcional:** `"segment_id": <id>` adiciona o contato ao segmento.
+- **Resposta:** `{ "results": [ { "created": true/false, "contact": { ... } } ] }`.
+- Cada sincronização cria uma **atividade** tipo `note` com descrição, justificativa, sugestões de campanha e próximo passo.
+
+```bash
+curl -X POST https://seu-dominio.com/api/v1/n8n_leads \
+  -H "Authorization: Bearer seu-token" \
+  -H "Content-Type: application/json" \
+  -d '[{"company_id":1,"temperatura_lead":"morno","email":"cliente@email.com","descricao_crm":"..."}]'
+```
+
+**Atualizar lead manualmente pela API**
+
+`PATCH /api/v1/contacts/:id` com JSON `{ "contact": { "lead_temperature": "quente", "lead_metadata": { "n8n_last": { } }, ... } }`.
 
 ---
 

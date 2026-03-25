@@ -53,6 +53,7 @@ Rails.application.routes.draw do
       resources :contacts
       resources :deals
       resources :activities
+      post "n8n_leads", to: "n8n_leads#create"
     end
   end
 end

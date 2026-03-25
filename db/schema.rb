@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_25_210001) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_26_120000) do
   create_table "activities", force: :cascade do |t|
     t.integer "contact_id", null: false
     t.integer "deal_id"
@@ -92,6 +92,12 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_25_210001) do
     t.string "lifecycle_stage"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "lead_temperature"
+    t.json "lead_metadata", default: {}, null: false
+    t.string "phone_normalized"
+    t.string "external_source_id"
+    t.index ["company_id", "external_source_id"], name: "index_contacts_on_company_id_and_external_source_id", unique: true, where: "external_source_id IS NOT NULL"
+    t.index ["company_id", "phone_normalized"], name: "index_contacts_on_company_id_and_phone_normalized", unique: true, where: "phone_normalized IS NOT NULL"
     t.index ["company_id"], name: "index_contacts_on_company_id"
   end
 
