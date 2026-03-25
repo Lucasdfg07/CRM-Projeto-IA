@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_25_200003) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_25_210001) do
   create_table "activities", force: :cascade do |t|
     t.integer "contact_id", null: false
     t.integer "deal_id"
@@ -127,6 +127,56 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_25_200003) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "form_answers", force: :cascade do |t|
+    t.integer "form_response_id", null: false
+    t.integer "form_field_id", null: false
+    t.text "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["form_field_id", "form_response_id"], name: "index_form_answers_on_form_field_id_and_form_response_id", unique: true
+    t.index ["form_response_id"], name: "index_form_answers_on_form_response_id"
+  end
+
+  create_table "form_fields", force: :cascade do |t|
+    t.integer "form_id", null: false
+    t.string "label", null: false
+    t.string "field_type", default: "text", null: false
+    t.boolean "required", default: false
+    t.integer "position", default: 0
+    t.text "placeholder"
+    t.json "options"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["form_id", "position"], name: "index_form_fields_on_form_id_and_position"
+  end
+
+  create_table "form_responses", force: :cascade do |t|
+    t.integer "form_id", null: false
+    t.integer "contact_id"
+    t.integer "segment_id"
+    t.string "email"
+    t.string "ip"
+    t.string "user_agent"
+    t.datetime "submitted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_id"], name: "index_form_responses_on_contact_id"
+    t.index ["form_id"], name: "index_form_responses_on_form_id"
+  end
+
+  create_table "forms", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.string "slug", null: false
+    t.string "theme", default: "neo"
+    t.string "accent_color", default: "#22d3ee"
+    t.integer "target_segment_id"
+    t.boolean "enabled", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_forms_on_slug", unique: true
+  end
+
   create_table "segments", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -155,4 +205,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_25_200003) do
   add_foreign_key "contacts", "companies"
   add_foreign_key "deals", "companies"
   add_foreign_key "deals", "contacts"
+  add_foreign_key "form_answers", "form_fields", on_delete: :cascade
+  add_foreign_key "form_answers", "form_responses", on_delete: :cascade
+  add_foreign_key "form_fields", "forms", on_delete: :cascade
+  add_foreign_key "form_responses", "contacts", on_delete: :nullify
+  add_foreign_key "form_responses", "forms", on_delete: :cascade
+  add_foreign_key "form_responses", "segments", on_delete: :nullify
+  add_foreign_key "forms", "segments", column: "target_segment_id"
 end
