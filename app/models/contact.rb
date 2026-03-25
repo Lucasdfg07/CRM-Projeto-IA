@@ -25,10 +25,28 @@ class Contact < ApplicationRecord
     [first_name, last_name].compact_blank.join(" ").presence || email.presence || "Contato ##{id}"
   end
 
+  # Apenas dígitos; para BR remove 55 inicial (13 dígitos) para bater com números salvos só com DDD.
   def self.normalize_phone(phone)
     return nil if phone.blank?
 
-    phone.to_s.gsub(/\D/, "").presence
+    digits = phone.to_s.gsub(/\D/, "")
+    return nil if digits.blank?
+
+    if digits.length >= 12 && digits.start_with?("55") && digits.length <= 13
+      digits = digits[2..]
+    end
+
+    digits.presence
+  end
+
+  # Para encontrar contatos gravados antes da normalização (com ou sem 55).
+  def self.phone_lookup_keys(phone)
+    n = normalize_phone(phone)
+    return [] if n.blank?
+
+    keys = [n]
+    keys << "55#{n}" if n.length.between?(10, 11)
+    keys.uniq
   end
 
   def self.normalize_email_string(email)

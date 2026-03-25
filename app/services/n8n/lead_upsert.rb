@@ -28,6 +28,10 @@ module N8n
       crm = h.delete(:crm_payload)
       crm = crm.deep_symbolize_keys if crm.is_a?(Hash)
       merged = (crm || {}).merge(h)
+      # Valores do nível raiz do n8n têm prioridade (crm_payload costuma repetir campos com null)
+      %i[email telefone phone first_name last_name external_source_id whatsapp_chat_id conversation_id].each do |k|
+        merged[k] = h[k] if h.key?(k) && h[k].present?
+      end
       if merged[:justificativa_temperatura].blank? && merged[:justificativa_temperativa].present?
         merged[:justificativa_temperatura] = merged.delete(:justificativa_temperativa)
       end
@@ -36,12 +40,7 @@ module N8n
 
     def find_or_build_contact
       scope = @company.contacts
-      ext = extract_external_id
-      if ext.present?
-        found = scope.find_by(external_source_id: ext.to_s)
-        return found if found
-      end
-
+      # 1) E-mail e telefone identificam o lead no CRM — antes de ids de sessão WhatsApp
       email = normalize_email(@payload[:email])
       if email.present?
         found = scope.where("lower(email) = ?", email.downcase).first
@@ -49,9 +48,15 @@ module N8n
       end
 
       phone_raw = @payload[:telefone].presence || @payload[:phone].presence
-      norm = Contact.normalize_phone(phone_raw)
-      if norm.present?
-        found = scope.find_by(phone_normalized: norm)
+      if phone_raw.present?
+        keys = Contact.phone_lookup_keys(phone_raw)
+        found = scope.where(phone_normalized: keys).first if keys.any?
+        return found if found
+      end
+
+      ext = extract_external_id
+      if ext.present?
+        found = scope.find_by(external_source_id: ext.to_s)
         return found if found
       end
 

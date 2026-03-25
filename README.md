@@ -254,7 +254,7 @@ curl -H "Authorization: Bearer seu-token" \
 - **Auth:** `Authorization: Bearer <CRM_API_TOKEN>`
 - **Body:** JSON — **array** de objetos (como no seu fluxo) **ou** um único objeto, **ou** `{ "leads": [ ... ] }` / `{ "items": [ ... ] }`.
 - **Empresa:** em cada item inclua `"company_id": <id>` **ou** defina `CRM_N8N_DEFAULT_COMPANY_ID` no servidor. Se existir **apenas uma** empresa no CRM, ela é usada automaticamente quando `company_id` e a env estão vazios.
-- **Deduplicação:** o CRM localiza o contato por `external_source_id` **ou** `whatsapp_chat_id` **ou** `conversation_id` (prioridade nessa ordem), depois por `email`, depois por `telefone`/`phone` (apenas dígitos).
+- **Deduplicação (atualizar lead existente):** primeiro por **`email`** (case-insensitive), depois por **`telefone`/`phone`** (normaliza BR: remove `55` e compara também com números gravados com prefixo), por último por `external_source_id` / `whatsapp_chat_id` / `conversation_id`. Campos `email`/`telefone` no nível raiz do JSON têm prioridade sobre `crm_payload` quando este vier com `null`.
 - **Campos principais:** `email`, `telefone` (ou `phone`), `temperatura_lead` (`frio` \| `morno` \| `quente`), `tipo_atendimento`, `descricao_crm`, `justificativa_temperatura`, `sugestoes_campanhas`, `proximo_passo`, `mensagem_cliente`, `crm_payload` (mesclado com o objeto raiz; corrige o typo `justificativa_temperativa` → `justificativa_temperatura`).
 - **Segmento opcional:** `"segment_id": <id>` adiciona o contato ao segmento.
 - **Resposta:** `{ "results": [ { "created": true/false, "contact": { ... } } ] }`.
