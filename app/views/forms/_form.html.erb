@@ -65,7 +65,7 @@
         <button type="button"
                 data-action="click->form-builder#openPalette"
                 class="text-xs bg-white text-slate-950 hover:bg-slate-100 px-4 py-2 rounded-lg font-semibold transition">
-          Add form elements
+          Adicionar elementos
         </button>
         <div class="ml-auto text-xs text-slate-500">
           Dica: inclua <span class="text-slate-300">E-mail</span> para criar o contato automaticamente.
@@ -105,9 +105,9 @@
          data-action="click->form-builder#noop">
     <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-200">
       <div class="flex gap-2">
-        <button type="button" class="text-sm font-semibold text-slate-900 border border-slate-200 rounded-full px-4 py-2">Add form elements</button>
-        <button type="button" class="text-sm text-slate-500 border border-slate-200 rounded-full px-4 py-2 opacity-60 cursor-not-allowed" disabled>Import questions</button>
-        <button type="button" class="text-sm text-slate-500 border border-slate-200 rounded-full px-4 py-2 opacity-60 cursor-not-allowed" disabled>Create with AI</button>
+        <button type="button" class="text-sm font-semibold text-slate-900 border border-slate-200 rounded-full px-4 py-2">Adicionar elementos</button>
+        <button type="button" class="text-sm text-slate-500 border border-slate-200 rounded-full px-4 py-2 opacity-60 cursor-not-allowed" disabled>Importar perguntas</button>
+        <button type="button" class="text-sm text-slate-500 border border-slate-200 rounded-full px-4 py-2 opacity-60 cursor-not-allowed" disabled>Criar com IA</button>
       </div>
       <button type="button" class="ml-auto w-9 h-9 rounded-full hover:bg-slate-100 text-slate-500"
               data-action="click->form-builder#closePalette">✕</button>
@@ -120,27 +120,27 @@
           <input type="text"
                  data-form-builder-target="search"
                  data-action="input->form-builder#filterPalette"
-                 placeholder="Search form elements"
+                 placeholder="Buscar elementos"
                  class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-300">
         </div>
 
         <div class="mt-5">
-          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Recommended</p>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Recomendados</p>
           <button type="button"
                   data-form-builder-target="paletteItem"
-                  data-search-text="Welcome Screen"
+                  data-search-text="Tela de boas-vindas"
                   data-action="click->form-builder#addFromPalette"
                   data-field-type="text"
                   data-field-label="Bem-vindo!"
                   data-field-placeholder="Digite para continuar..."
                   class="w-full text-left rounded-xl border border-slate-200 p-3 hover:bg-slate-50 transition">
-            <p class="text-sm font-semibold text-slate-900">Welcome Screen</p>
+            <p class="text-sm font-semibold text-slate-900">Tela de boas-vindas</p>
             <p class="text-xs text-slate-500 mt-1">Introdução do formulário</p>
           </button>
         </div>
 
         <div class="mt-6">
-          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Connect to apps</p>
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Conectar a apps</p>
           <div class="rounded-xl border border-dashed border-slate-200 p-3 text-xs text-slate-400">
             Integrações desabilitadas neste CRM.
           </div>
@@ -151,60 +151,60 @@
       <div class="md:col-span-3 p-5 space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <h3 class="text-sm font-semibold text-slate-900 mb-3">Contact info</h3>
+            <h3 class="text-sm font-semibold text-slate-900 mb-3">Informações de contato</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button type="button"
                       data-form-builder-target="paletteItem"
-                      data-search-text="Contact Info Nome"
+                      data-search-text="Contato Nome"
                       data-action="click->form-builder#addFromPalette"
                       data-field-type="text"
                       data-field-label="Qual o seu nome?"
                       data-field-required="true"
                       data-field-placeholder="Digite sua resposta aqui..."
                       class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
-                <p class="text-sm font-semibold text-slate-900">Contact Info</p>
+                <p class="text-sm font-semibold text-slate-900">Contato</p>
                 <p class="text-xs text-slate-500 mt-1">Nome</p>
               </button>
               <button type="button"
                       data-form-builder-target="paletteItem"
-                      data-search-text="Email"
+                      data-search-text="Email E-mail"
                       data-action="click->form-builder#addFromPalette"
                       data-field-type="email"
                       data-field-label="Digite seu melhor E-mail"
                       data-field-required="true"
                       data-field-placeholder="nome@email.com"
                       class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
-                <p class="text-sm font-semibold text-slate-900">Email</p>
+                <p class="text-sm font-semibold text-slate-900">E-mail</p>
                 <p class="text-xs text-slate-500 mt-1">Contato</p>
               </button>
               <button type="button"
                       data-form-builder-target="paletteItem"
-                      data-search-text="Phone Number Telefone"
+                      data-search-text="Telefone Número"
                       data-action="click->form-builder#addFromPalette"
                       data-field-type="phone"
                       data-field-label="Digite um Telefone válido"
                       data-field-required="true"
                       data-field-placeholder="(00) 00000-0000"
                       class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
-                <p class="text-sm font-semibold text-slate-900">Phone Number</p>
+                <p class="text-sm font-semibold text-slate-900">Telefone</p>
                 <p class="text-xs text-slate-500 mt-1">Contato</p>
               </button>
             </div>
           </div>
 
           <div>
-            <h3 class="text-sm font-semibold text-slate-900 mb-3">Choice</h3>
+            <h3 class="text-sm font-semibold text-slate-900 mb-3">Escolhas</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button type="button"
                       data-form-builder-target="paletteItem"
-                      data-search-text="Dropdown Select"
+                      data-search-text="Lista suspensa Seleção"
                       data-action="click->form-builder#addFromPalette"
                       data-field-type="select"
                       data-field-label="Escolha uma opção"
                       data-field-placeholder=""
                       data-field-options="Opção 1\nOpção 2\nOpção 3"
                       class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
-                <p class="text-sm font-semibold text-slate-900">Dropdown</p>
+                <p class="text-sm font-semibold text-slate-900">Lista suspensa</p>
                 <p class="text-xs text-slate-500 mt-1">Seleção</p>
               </button>
             </div>
@@ -213,45 +213,45 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <h3 class="text-sm font-semibold text-slate-900 mb-3">Text & Video</h3>
+            <h3 class="text-sm font-semibold text-slate-900 mb-3">Texto</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button type="button"
                       data-form-builder-target="paletteItem"
-                      data-search-text="Short Text Texto"
+                      data-search-text="Texto curto"
                       data-action="click->form-builder#addFromPalette"
                       data-field-type="text"
                       data-field-label="Digite sua resposta"
                       data-field-placeholder="Digite sua resposta aqui..."
                       class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
-                <p class="text-sm font-semibold text-slate-900">Short Text</p>
+                <p class="text-sm font-semibold text-slate-900">Texto curto</p>
                 <p class="text-xs text-slate-500 mt-1">Texto</p>
               </button>
               <button type="button"
                       data-form-builder-target="paletteItem"
-                      data-search-text="Long Text Texto longo"
+                      data-search-text="Texto longo"
                       data-action="click->form-builder#addFromPalette"
                       data-field-type="textarea"
                       data-field-label="Conte mais sobre você"
                       data-field-placeholder="Digite sua resposta aqui..."
                       class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
-                <p class="text-sm font-semibold text-slate-900">Long Text</p>
+                <p class="text-sm font-semibold text-slate-900">Texto longo</p>
                 <p class="text-xs text-slate-500 mt-1">Texto</p>
               </button>
             </div>
           </div>
 
           <div>
-            <h3 class="text-sm font-semibold text-slate-900 mb-3">Other</h3>
+            <h3 class="text-sm font-semibold text-slate-900 mb-3">Outros</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button type="button"
                       data-form-builder-target="paletteItem"
-                      data-search-text="Statement"
+                      data-search-text="Aviso Informação"
                       data-action="click->form-builder#addFromPalette"
                       data-field-type="text"
                       data-field-label="Informação"
                       data-field-placeholder="Escreva um texto..."
                       class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
-                <p class="text-sm font-semibold text-slate-900">Statement</p>
+                <p class="text-sm font-semibold text-slate-900">Aviso</p>
                 <p class="text-xs text-slate-500 mt-1">Bloco informativo</p>
               </button>
             </div>
