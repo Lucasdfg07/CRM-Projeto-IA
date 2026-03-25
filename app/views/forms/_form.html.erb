@@ -62,24 +62,13 @@
     <!-- Right: builder -->
     <div class="lg:col-span-2 space-y-4">
       <div class="bg-slate-900/70 border border-white/10 rounded-2xl p-4 backdrop-blur-xl flex flex-wrap gap-2 items-center">
-        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider mr-1">Adicionar campo:</span>
-        <% presets = [
-          ["Texto", "text"],
-          ["Texto longo", "textarea"],
-          ["E-mail", "email"],
-          ["Telefone", "phone"],
-          ["Seleção", "select"]
-        ] %>
-        <% presets.each do |label, type| %>
-          <button type="button"
-                  data-action="click->form-builder#addField"
-                  data-field-type="<%= type %>"
-                  class="text-xs bg-slate-800 hover:bg-cyan-400/20 text-slate-200 hover:text-cyan-100 px-3 py-1.5 rounded-lg transition">
-            <%= label %>
-          </button>
-        <% end %>
+        <button type="button"
+                data-action="click->form-builder#openPalette"
+                class="text-xs bg-white text-slate-950 hover:bg-slate-100 px-4 py-2 rounded-lg font-semibold transition">
+          Add form elements
+        </button>
         <div class="ml-auto text-xs text-slate-500">
-          Dica: inclua um campo <span class="text-slate-300">E-mail</span> para criar o contato automaticamente.
+          Dica: inclua <span class="text-slate-300">E-mail</span> para criar o contato automaticamente.
         </div>
       </div>
 
@@ -108,4 +97,173 @@
     </div>
   </div>
 <% end %>
+
+<!-- Palette modal (Typeform-like) -->
+<div class="hidden fixed inset-0 z-50 items-center justify-center bg-black/60 backdrop-blur-sm"
+     data-form-builder-target="modal"
+     data-action="click->form-builder#closePalette">
+  <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl border border-black/10 overflow-hidden"
+       data-action="click->form-builder#noop">
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-200">
+      <div class="flex gap-2">
+        <button type="button" class="text-sm font-semibold text-slate-900 border border-slate-200 rounded-full px-4 py-2">Add form elements</button>
+        <button type="button" class="text-sm text-slate-500 border border-slate-200 rounded-full px-4 py-2 opacity-60 cursor-not-allowed" disabled>Import questions</button>
+        <button type="button" class="text-sm text-slate-500 border border-slate-200 rounded-full px-4 py-2 opacity-60 cursor-not-allowed" disabled>Create with AI</button>
+      </div>
+      <button type="button" class="ml-auto w-9 h-9 rounded-full hover:bg-slate-100 text-slate-500"
+              data-action="click->form-builder#closePalette">✕</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 min-h-[520px]">
+      <!-- left column -->
+      <div class="md:col-span-1 border-r border-slate-200 p-4">
+        <div class="relative">
+          <input type="text"
+                 data-form-builder-target="search"
+                 data-action="input->form-builder#filterPalette"
+                 placeholder="Search form elements"
+                 class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-300">
+        </div>
+
+        <div class="mt-5">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Recommended</p>
+          <button type="button"
+                  data-form-builder-target="paletteItem"
+                  data-search-text="Welcome Screen"
+                  data-action="click->form-builder#addFromPalette"
+                  data-field-type="text"
+                  data-field-label="Bem-vindo!"
+                  data-field-placeholder="Digite para continuar..."
+                  class="w-full text-left rounded-xl border border-slate-200 p-3 hover:bg-slate-50 transition">
+            <p class="text-sm font-semibold text-slate-900">Welcome Screen</p>
+            <p class="text-xs text-slate-500 mt-1">Introdução do formulário</p>
+          </button>
+        </div>
+
+        <div class="mt-6">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Connect to apps</p>
+          <div class="rounded-xl border border-dashed border-slate-200 p-3 text-xs text-slate-400">
+            Integrações desabilitadas neste CRM.
+          </div>
+        </div>
+      </div>
+
+      <!-- main palette -->
+      <div class="md:col-span-3 p-5 space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-sm font-semibold text-slate-900 mb-3">Contact info</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button type="button"
+                      data-form-builder-target="paletteItem"
+                      data-search-text="Contact Info Nome"
+                      data-action="click->form-builder#addFromPalette"
+                      data-field-type="text"
+                      data-field-label="Qual o seu nome?"
+                      data-field-required="true"
+                      data-field-placeholder="Digite sua resposta aqui..."
+                      class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
+                <p class="text-sm font-semibold text-slate-900">Contact Info</p>
+                <p class="text-xs text-slate-500 mt-1">Nome</p>
+              </button>
+              <button type="button"
+                      data-form-builder-target="paletteItem"
+                      data-search-text="Email"
+                      data-action="click->form-builder#addFromPalette"
+                      data-field-type="email"
+                      data-field-label="Digite seu melhor E-mail"
+                      data-field-required="true"
+                      data-field-placeholder="nome@email.com"
+                      class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
+                <p class="text-sm font-semibold text-slate-900">Email</p>
+                <p class="text-xs text-slate-500 mt-1">Contato</p>
+              </button>
+              <button type="button"
+                      data-form-builder-target="paletteItem"
+                      data-search-text="Phone Number Telefone"
+                      data-action="click->form-builder#addFromPalette"
+                      data-field-type="phone"
+                      data-field-label="Digite um Telefone válido"
+                      data-field-required="true"
+                      data-field-placeholder="(00) 00000-0000"
+                      class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
+                <p class="text-sm font-semibold text-slate-900">Phone Number</p>
+                <p class="text-xs text-slate-500 mt-1">Contato</p>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-semibold text-slate-900 mb-3">Choice</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button type="button"
+                      data-form-builder-target="paletteItem"
+                      data-search-text="Dropdown Select"
+                      data-action="click->form-builder#addFromPalette"
+                      data-field-type="select"
+                      data-field-label="Escolha uma opção"
+                      data-field-placeholder=""
+                      data-field-options="Opção 1\nOpção 2\nOpção 3"
+                      class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
+                <p class="text-sm font-semibold text-slate-900">Dropdown</p>
+                <p class="text-xs text-slate-500 mt-1">Seleção</p>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-sm font-semibold text-slate-900 mb-3">Text & Video</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button type="button"
+                      data-form-builder-target="paletteItem"
+                      data-search-text="Short Text Texto"
+                      data-action="click->form-builder#addFromPalette"
+                      data-field-type="text"
+                      data-field-label="Digite sua resposta"
+                      data-field-placeholder="Digite sua resposta aqui..."
+                      class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
+                <p class="text-sm font-semibold text-slate-900">Short Text</p>
+                <p class="text-xs text-slate-500 mt-1">Texto</p>
+              </button>
+              <button type="button"
+                      data-form-builder-target="paletteItem"
+                      data-search-text="Long Text Texto longo"
+                      data-action="click->form-builder#addFromPalette"
+                      data-field-type="textarea"
+                      data-field-label="Conte mais sobre você"
+                      data-field-placeholder="Digite sua resposta aqui..."
+                      class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
+                <p class="text-sm font-semibold text-slate-900">Long Text</p>
+                <p class="text-xs text-slate-500 mt-1">Texto</p>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-semibold text-slate-900 mb-3">Other</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button type="button"
+                      data-form-builder-target="paletteItem"
+                      data-search-text="Statement"
+                      data-action="click->form-builder#addFromPalette"
+                      data-field-type="text"
+                      data-field-label="Informação"
+                      data-field-placeholder="Escreva um texto..."
+                      class="rounded-xl border border-slate-200 p-3 hover:bg-slate-50 text-left transition">
+                <p class="text-sm font-semibold text-slate-900">Statement</p>
+                <p class="text-xs text-slate-500 mt-1">Bloco informativo</p>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-xs text-slate-500">
+          Integrações e Google Drive foram intencionalmente omitidos.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
